@@ -9,6 +9,8 @@ docs/**
 .github/**
 .vscode/**
 .gitignore
+.husky/**
+node_modules/**
 *.ts
 *.tsx
 tsconfig*.json

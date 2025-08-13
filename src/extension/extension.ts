@@ -9,6 +9,7 @@ import { MermaidRenderer } from './mermaid';
 import { WorkflowParser } from './workflow';
 import { SymbolGraph } from '../symbolProviders/types';
 import { diffGraphs, SymbolGraphPatch } from './diff';
+import { createStatusBarItem } from './statusBar';
 
 const symbolProviders = [new TypeScriptProvider(), new PythonProvider(), new GoProvider()];
 let lastSymbolGraph: SymbolGraph | undefined;
@@ -50,6 +51,40 @@ export function activate(context: vscode.ExtensionContext) {
       context.subscriptions.push(wfWatcher);
   });
   context.subscriptions.push(disposable);
+  // Status bar item (helper)
+  createStatusBarItem(context);
+  // Hover provider (preview language feature)
+  context.subscriptions.push(vscode.languages.registerHoverProvider({ language: 'typescript', scheme: 'file' }, {
+    provideHover(doc, pos) {
+      const range = doc.getWordRangeAtPosition(pos);
+      if (!range) return;
+      const word = doc.getText(range);
+      if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(word)) {
+        return new vscode.Hover(new vscode.MarkdownString(`**ProjectAtlas** symbol: \`${word}\``));
+      }
+      return undefined;
+    }
+  }));
+  // Activity view (placeholder tree)
+  const treeData: vscode.TreeDataProvider<string> = {
+    getTreeItem: (el: string) => new vscode.TreeItem(el, vscode.TreeItemCollapsibleState.None),
+    getChildren: () => Promise.resolve(['Open Atlas Panel', 'View Workflows', 'View Symbol Graph'])
+  };
+  vscode.window.registerTreeDataProvider('projectAtlasDashboard', treeData);
+  // Notification helper example
+  setTimeout(() => {
+    vscode.window.showInformationMessage('ProjectAtlas ready', 'Open Panel').then(sel => {
+      if (sel === 'Open Panel') vscode.commands.executeCommand('projectAtlas.open');
+    });
+  }, 500);
+  // Walkthrough trigger
+  if (vscode.workspace.getConfiguration('projectAtlas').get<boolean>('showWelcomeOnStartup')) {
+    // Use context globalState to only show once
+    if (!context.globalState.get('walkthroughShown')) {
+      vscode.commands.executeCommand('workbench.action.openWalkthrough', 'projectAtlas.getStarted');
+      context.globalState.update('walkthroughShown', true);
+    }
+  }
   // minimal public API export
   // Consumers can acquire via: const api = vscode.extensions.getExtension('MantejSingh.projectatlas')?.exports;
   return {
