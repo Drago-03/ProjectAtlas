@@ -1,0 +1,17 @@
+/* ProjectAtlas Webview Styles */
+body, .root { font-family: var(--vscode-font-family, system-ui); margin:0; padding:0; }
+.container { padding:12px; line-height:1.4; }
+h1 { margin:0 0 8px; font-size:20px; }
+section { margin-top:16px; }
+.flex { display:flex; gap:24px; flex-wrap:wrap; }
+.panel { flex:1 1 340px; min-width:300px; background: var(--vscode-editor-background); border:1px solid var(--vscode-editorWidget-border); border-radius:4px; padding:12px; box-sizing:border-box; }
+.panel h2 { margin:0 0 8px; font-size:14px; text-transform:uppercase; letter-spacing:0.5px; }
+.scroll { max-height:260px; overflow:auto; }
+.code { font-family: var(--vscode-editor-font-family, monospace); font-size:12px; background: var(--vscode-textCodeBlock-background,#1e1e1e); padding:4px 6px; border-radius:3px; }
+.graph-list li { list-style:none; padding:2px 0; border-bottom:1px solid var(--vscode-editorIndentGuide-background); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.workflow-edge { font-size:11px; }
+.badge { display:inline-block; background:#444; color:#fff; padding:1px 6px; border-radius:10px; font-size:11px; margin-left:6px; }
+.btn-small { background:var(--vscode-button-background); color:var(--vscode-button-foreground); border:1px solid var(--vscode-button-border,transparent); border-radius:4px; cursor:pointer; }
+.btn-small:hover { filter:brightness(1.1); }
+.error-block { background:#3b1e1e; color:#fdd; padding:6px; border:1px solid #a55; border-radius:4px; margin-top:8px; }
+svg { font-family: var(--vscode-font-family, system-ui); }

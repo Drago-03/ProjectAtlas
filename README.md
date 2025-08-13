@@ -1,120 +1,181 @@
-# ProjectAtlas  
-### Comprehensive Proposal for a Two-Week MVP Deliverable  
+<div align="center">
+	<img src="media/icon.png" width="96" alt="ProjectAtlas Logo" />
+	<h1>ProjectAtlas</h1>
+	<p><strong>An offline, unified workspace atlas for VS Code: docs, diagrams, workflows, directories, symbols & call graphs.</strong></p>
 
-ProjectAtlas will be a Visual Studio Code extension that renders **every significant artifact in a workspace—documents, workflows, folder structures, symbols and call graphs—inside a single, interactive canvas**. The MVP must be feature-complete yet lightweight, entirely offline and delivered in fourteen days. [${DIA-SOURCE}](code.visualstudio.com/api/extension-guides/webview)
-
----
-
-## 1  Vision & Value  
-
-Developers juggle Markdown previews, diagram generators, workflow visualisers and code-map plug-ins. ProjectAtlas collapses that tooling sprawl into one extension, offering:  
-
-- Instant previews of documentation and diagrams.  
-- Clickable maps of directory trees and workflow pipelines.  
-- Live call-graph and symbol insights across multiple languages.  
-- A unified UX that never leaves VS Code or sends data to the cloud. [${DIA-SOURCE}](github.com/microsoft/vscode-extension-samples)
+	<p>
+		<a href="https://github.com/Drago-03/ProjectAtlas/actions"><img alt="CI" src="https://img.shields.io/badge/ci-pending-lightgrey" /></a>
+		<img alt="License" src="https://img.shields.io/badge/license-MIT-blue" />
+		<img alt="Status" src="https://img.shields.io/badge/status-beta-orange" />
+		<img alt="VS Code" src="https://img.shields.io/badge/vscode%20engine-%3E=1.85.0-1f6feb" />
+	</p>
+</div>
 
 ---
 
-## 2  Functional Scope  
-
-### 2.1 File-Type Visualisation  
-
-| Format | File Extensions | Renderer / Library | Key Features |  
-|--------|-----------------|--------------------|--------------|  
-| **Markdown** | .md, .markdown | marked + highlight.js | GFM tables, emojis, `{latex}` math, fenced Mermaid blocks |  
-| **Mermaid** | .mmd, fenced ```mermaid``` | mermaid.js | Theme switch, zoom/pan |  
-| **YAML / JSON Workflows** | .yaml, .yml, .json, .workflow | js-yaml + custom D3 flowchart | Detect GitHub Actions, Azure Pipelines; show job order & triggers |  
-| **Plain Text & Logs** | .* | Raw viewer with syntax highlight where possible | Large-file virtualisation |  
-
-### 2.2 Workspace & Dependency Graphs  
-
-- Force-directed and hierarchical views of folders/files.  
-- Edge types: **contains**, **imports**, **Markdown links**, **workflow job dependencies**.  
-- Click a node to open the file; hover shows metadata (size, last commit). [${DIA-SOURCE}](d3js.org)
-
-### 2.3 Code-Symbol & Call-Graph Visualisation  
-
-| Language | File Extensions | Provider | Initial Coverage |  
-|----------|-----------------|----------|------------------|  
-| **TypeScript / JavaScript** | .ts, .tsx, .js, .jsx, .mjs, .cjs | TypeScript compiler API (`ts-morph`) | Full symbol tree, calls, imports, inheritance |  
-| **Python** | .py | Pyright AST (WebWorker) | Functions, classes, imports, call graph (best-effort) |  
-| **Go** | .go | go/packages via WASM | Packages, funcs, method sets |  
-| **Java** | .java | JavaParser (WASM) | Classes, interfaces, inheritance edges |  
-| **C#** | .cs | Roslyn WASM | Namespaces, classes, methods, properties |  
-
-All providers output a common `{ nodes, edges }` schema consumed by the Graph Engine, enabling future plug-ins for languages such as Rust or Kotlin.  
+## Table of Contents
+1. Features
+2. Quick Start
+3. Commands
+4. Visuals & Graph Model
+5. Symbol Patch Protocol
+6. Configuration
+7. Performance Notes
+8. Roadmap
+9. Contributing
+10. Publishing / Release Process
+11. License & Credits
+12. Contributors
 
 ---
 
-## 3  Technical Architecture  
+## 1. Features
 
-| Layer | Responsibilities | Tech |  
-|-------|------------------|------|  
-| **Extension Host** | Activation events, commands (`projectAtlas.open`), file-system walker, AST cache, settings | TypeScript (ES2022) |  
-| **Webview SPA** | UI, state management, rendering pipelines | Vite + React + Redux Toolkit |  
-| **Renderers** | Markdown, Mermaid, Workflow, Directory, Symbol graphs | marked, mermaid.js, js-yaml, D3 |  
-| **Symbol Providers** | Language-specific AST extraction | ts-morph, Pyright, go/packages, JavaParser, Roslyn |  
-| **Graph Engine** | Progressive D3 simulation, virtual scrolling, minimap | D3-v7 with WebGL fallback |  
-
-A message bridge (`window.acquireVsCodeApi`) carries diff patches; only changed nodes re-render (<50 ms target). Strict CSP blocks remote scripts; all assets are bundled. [${DIA-SOURCE}](code.visualstudio.com/api/extension-guides/webview)
-
----
-
-## 4  Two-Week Execution Plan  
-
-| Day | Milestone | Principal Tasks | Deliverable |  
-|----|-----------|-----------------|-------------|  
-| 1 | Kick-off & Scaffold | Confirm spec, initialise repo with `yo code`, set up CI, Dev Container | Bare VSIX skeleton |  
-| 2-3 | Webview Core | Build HTML shell, configure CSP, implement `projectAtlas.open`, live reload handshake | Webview loads local bundle |  
-| 4-5 | Markdown & Mermaid | Integrate marked, highlight.js, mermaid; enable split preview & fenced block detection | Docs/diagram preview |  
-| 6-7 | Workflow Renderer | Parse YAML/JSON, construct D3 flowchart, click-to-source | CI/CD visualiser |  
-| 8-9 | Directory Graph | Recursive `workspace.findFiles`, adjacency builder, D3 force-layout | Interactive project map |  
-| 10-11 | TypeScript Symbol Graph | Implement `TypeScriptProvider`, containment tree, call graph, navigation | TS/JS insight view |  
-| 12 | Multi-Language Hook | Create `ISymbolProvider` interface, stub Python/Go providers | Extensible provider API |  
-| 13 | UX Polish | Theme sync, search/filter palette, settings GUI, keyboard shortcuts | Feature-complete beta |  
-| 14 | QA & Release | Unit + E2E tests, accessibility audit, docs, GIF demo, `vsce publish` | v0.1.0 on Marketplace |  
-
-Daily stand-ups and nightly builds guard scope; non-critical niceties (e.g., complexity metrics, heat-maps) are queued for v0.2.
+| Area | Capability | Details |
+|------|------------|---------|
+| Markdown | Render + inline Mermaid | `marked` + `highlight.js`; fenced ```mermaid``` blocks auto-render |
+| Mermaid | Theme aware diagrams | Light/Dark toggle triggers re-render |
+| Workflows | GitHub Actions graph | Job dependency DAG (needs chains) with live watcher |
+| Directory | Interactive tree/force graph | Folder and file nodes, click-to-open |
+| Symbols | TypeScript/JavaScript symbols | Functions, file nodes, import & call edges (ts-morph) |
+| Incremental Updates | Patch model | `{nodesAdded,nodesRemoved,edgesAdded,edgesRemoved}` diff merging |
+| Error Handling | Mermaid errors surfaced | Fallback placeholder + error list |
+| Offline | No network required | All libraries bundled locally |
 
 ---
 
-## 5  Team & Budget  
+## 2. Quick Start
 
-- **2 Senior Full-Stack Devs** (TypeScript, React, compiler APIs)  
-- **1 QA / Accessibility Engineer**  
-- **0.5 Technical Writer / DevRel**  
+### Install (when published)
+1. Open VS Code marketplace, search for “ProjectAtlas”.
+2. Click Install.
+3. Run the command: `ProjectAtlas: Open`.
 
-Cost: **2.5 FTE × 2 weeks × $2 000 = $10 000** plus 10 % contingency → **≈ $11 000**.
-
----
-
-## 6  Risks & Mitigations  
-
-- **Compressed Schedule:** Freeze scope after Day 3; nightly CI ensures continuous integration.  
-- **Large Repos:** Incremental parsing, virtual scrolling, graph clustering.  
-- **Language Edge-Cases:** Providers mark uncertain edges “experimental”; user toggle in settings.  
-- **Bundle Size:** Tree-shaking, code-splitting; VSIX target <5 MB. [${DIA-SOURCE}](code.visualstudio.com/api/working-with-extensions/publishing-extension)
-
----
-
-## 7  Deliverables  
-
-1. **VSIX Package:** `projectatlas-0.1.0.vsix`  
-2. **Documentation:** README, quick-start, API guide.  
-3. **Marketing Assets:** GIF preview, Marketplace description, social-media copy.  
-4. **CI Pipeline:** GitHub Actions for lint, test, package.  
+### Dev / Local Build
+```bash
+git clone https://github.com/Drago-03/ProjectAtlas.git
+cd ProjectAtlas
+npm install
+npm run build
+# Press F5 in VS Code to launch Extension Development Host
+```
 
 ---
 
-## 8  Future Roadmap (Post-MVP)  
+## 3. Commands
 
-- **v0.2:** Complexity heat-map, Git diff overlays, Rust/Kotlin providers.  
-- **v1.0:** PlantUML & AsciiDoc renderers, collaborative graph sharing, export to PNG/SVG.  
-- **v2.0:** Public extension API so third-party authors can add custom renderers and symbol providers.  
+| Command ID | Title | Description |
+|------------|-------|-------------|
+| `projectAtlas.open` | ProjectAtlas: Open | Opens the atlas webview panel |
 
 ---
 
-## 9  Conclusion  
+## 4. Visuals & Graph Model
 
-In just two weeks, ProjectAtlas will give VS Code users a **panoramic, interactive atlas** of their entire codebase—documents, diagrams, workflows, directories and call graphs—without external dependencies. This unified perspective accelerates onboarding, debugging and architecture reviews, setting a new standard for in-editor visualisation. [${DIA-SOURCE}](github.com/microsoft/vscode-languageserver-node)
+All internal visualisations share a common structure:
+```ts
+interface GraphNode { id: string; label?: string; kind?: string; file?: string; }
+interface GraphEdge { id: string; from: string; to: string; kind: string; }
+interface SymbolGraph { nodes: GraphNode[]; edges: GraphEdge[]; diagnostics?: string[] }
+```
+
+Edge kinds currently emitted:
+| Kind | Source |
+|------|--------|
+| `imports` | TypeScript import declarations |
+| `calls` | Inferred per-file call edges to function declarations |
+| `depends` | Workflow job `needs` relationships |
+| `contains` | (Directory tree internal usage) |
+
+---
+
+## 5. Symbol Patch Protocol
+
+To avoid shipping the entire symbol graph on every save, a structural diff is computed:
+```ts
+interface SymbolGraphPatch {
+	nodesAdded: GraphNode[];
+	nodesRemoved: string[]; // node IDs
+	edgesAdded: GraphEdge[];
+	edgesRemoved: string[]; // edge IDs
+}
+```
+Client merge strategy (webview): add `nodesAdded`, remove by id, then apply edge additions/removals idempotently. An empty patch (all arrays empty) means “no structural change” but is still valid.
+
+---
+
+## 6. Configuration (Planned)
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `projectAtlas.symbols.enable` | Enable symbol extraction | true |
+| `projectAtlas.symbols.languages` | Language allowlist | `["typescript","javascript"]` |
+| `projectAtlas.mermaid.themeSync` | Sync with VS Code theme | true |
+| `projectAtlas.performance.debounceMs` | Debounce interval for rebuild | 200 |
+
+Future settings will be contributed via `contributes.configuration` when stabilized.
+
+---
+
+## 7. Performance Notes
+| Concern | Mitigation |
+|---------|------------|
+| Repeated symbol rebuilds | 200ms debounce on save events |
+| Large TypeScript projects | Project cache (currently simplified recreate; future incremental) |
+| Mermaid in non-DOM test env | DOM guard returns placeholder SVG |
+| Workflow churn | Cached last workflow graph; watcher sends `WORKFLOW_UPDATE` |
+
+---
+
+## 8. Roadmap
+| Version | Items |
+|---------|-------|
+| 0.2 | Python / Go provider stubs, search/filter UI |
+| 0.3 | Rich call graph (per-function caller nodes), collapse/expand groups |
+| 0.4 | Export diagrams (SVG/PNG), PlantUML support |
+| 0.5 | Multi-repo / workspace multi-root aggregation |
+| 1.0 | Extension API: custom symbol providers & render plugins |
+
+---
+
+## 9. Contributing
+```bash
+git clone https://github.com/Drago-03/ProjectAtlas.git
+cd ProjectAtlas
+npm install
+npm run build   # build extension + webview
+npm test        # run unit tests (currently limited; harness under refactor)
+```
+Please open issues with reproduction steps. PRs should include: description, before/after notes, and test (when feasible).
+
+Guidelines:
+* Keep bundles lean – prefer dynamic feature toggles to additional heavy deps.
+* Isolate language providers; avoid coupling UI state to extraction logic.
+* Use the symbol patch protocol for incremental updates.
+
+---
+
+## 10. Publishing / Release Process
+1. Update `VERSION` and `docs/CHANGELOG.md`.
+2. Run `npm run build` → verify `dist/` contains extension & webview assets.
+3. Run lint & tests: `npm run lint && npm test`.
+4. Package: `npx vsce package` (ensure you have a Personal Access Token for publishing if needed).
+5. Publish: `npx vsce publish` (publisher id must be set; update `publisher` in package.json).
+6. Create a GitHub Release tagging the version.
+
+CI (planned) will automate lint/test/package on PRs and attach VSIX as an artifact.
+
+---
+
+## 11. License & Credits
+MIT License. Uses third-party libraries: React, D3, mermaid, marked, highlight.js, ts-morph, js-yaml.
+
+---
+
+## 12. Contributors
+| Name | Role |
+|------|------|
+| @Drago-03 | Maintainer / Architect |
+| (You?) | Contributor – open a PR! |
+
+<sub>Badges and some sections will update as CI & release automation are added.</sub>
+
