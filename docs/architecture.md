@@ -1,18 +1,95 @@
-# ProjectAtlas Architecture Overview
+# ProjectAtlas Architecture
 
-Layers:
+This document provides a systems-level view, data contracts, and runtime flows. Diagrams use Mermaid for clarity.
 
-1. Extension Host - Registers commands; computes graphs (directory, workflows, symbols) and diffs; debounced rebuild (200ms).
-2. Webview (React + D3) - Renders Markdown, diagrams, directory tree (hierarchical), workflow force graph, symbol metrics.
-3. Symbol Providers - Extract language constructs to a unified graph (TypeScript provider with import + call edges; stubs for others).
-4. Renderers - Markdown (marked + highlight.js), Mermaid (theme-aware), Workflow (YAML parser), Directory (recursive FS), D3 Graph modules.
+## Layered Overview
 
+```mermaid
+flowchart TB
+	subgraph VSCode[VS Code Host]
+		A[Activation Command\nprojectAtlas.open]
+		W[File Watchers\n(onDidSave, Workflow YAML)]
+		P[Symbol Providers\nts-morph]
+		D[Diff Engine\n(diffGraphs)]
+		C[Message Bridge]
+	end
+	subgraph Webview[Webview React SPA]
+		S[State Store]
+		R1[Markdown & Mermaid Renderer]
+		R2[Directory Graph]
+		R3[Workflow Graph]
+		R4[Symbol Graph]
+		Patch[Patch Merge]
+	end
+	FS[(Workspace FS)]
+	YAML[(.github/workflows)]
+	A --> FS
+	W --> YAML
+	FS --> P
+	P --> D
+	YAML --> P
+	D -->|INIT_STATE / SYMBOL_PATCH| C --> S
+	S --> Patch --> R4
+	S --> R2
+	S --> R3
+	S --> R1
+```
 
-Patch Schema:
-Symbol graph updates stream as `{ nodesAdded, nodesRemoved, edgesAdded, edgesRemoved }` enabling O(k) merge where k is delta size.
+## Runtime Flow (Symbol Update)
+```mermaid
+sequenceDiagram
+participant VS as VS Code
+participant Prov as TypeScriptProvider
+participant Diff as DiffEngine
+participant WV as Webview
+VS->>Prov: onDidSave(file)
+Prov->>Prov: Rebuild symbol graph (debounced)
+Prov->>Diff: Provide previous & new graphs
+Diff-->>VS: Patch {nodesAdded,...}
+VS-->>WV: postMessage SYMBOL_PATCH
+WV->>WV: Merge patch into store
+WV->>User: Re-render impacted graph nodes
+```
 
-Messaging Channel:
-`INIT_STATE`, `MARKDOWN_RENDER`, `SYMBOL_PATCH`, `GRAPH_UPDATE`, `RENDER_MERMAID`, `MERMAID_RESULT`, `MERMAID_ERROR`.
+## Data Contracts
+```ts
+interface GraphNode { id: string; label?: string; kind?: string; file?: string }
+interface GraphEdge { id: string; from: string; to: string; kind: string }
+interface SymbolGraph { nodes: GraphNode[]; edges: GraphEdge[]; diagnostics?: string[] }
+interface SymbolGraphPatch {
+	nodesAdded: GraphNode[];
+	nodesRemoved: string[];
+	edgesAdded: GraphEdge[];
+	edgesRemoved: string[];
+}
+```
 
-Security: Strict CSP, local bundled assets only.
-Performance: Reused ts-morph Project, debounced rebuild, incremental patches reduce UI re-render cost.
+## Messaging Channel
+| Message | Direction | Payload |
+|---------|-----------|---------|
+| INIT_STATE | Extension -> Webview | Initial graphs & markdown seed |
+| SYMBOL_PATCH | Extension -> Webview | SymbolGraphPatch |
+| WORKFLOW_UPDATE | Extension -> Webview | Recomputed workflow graph |
+| RENDER_MERMAID | Webview -> Extension | Mermaid source block |
+| MERMAID_RESULT / MERMAID_ERROR | Extension -> Webview | Rendered SVG or diagnostics |
+| OPEN_FILE | Webview -> Extension | `{ file: string }` |
+
+## Performance Strategies
+* Debounce rebuild to collapse rapid save bursts.
+* Diff-based patching to limit UI reconciliation to changed nodes/edges.
+* Cached last workflow graph; no recompute if YAML unchanged.
+* Lazy mermaid rendering; blocked if outside webview DOM.
+
+## Security & Isolation
+* Strict CSP: only local `vscode-resource` URIs.
+* No network requests; offline-first.
+* Sanitized markdown via `marked` + code highlighting; fenced mermaid isolated.
+
+## Extensibility Roadmap
+Future symbol providers will implement a shared interface producing `SymbolGraph`. A provider registry allows conditional activation per language setting.
+
+## Future Enhancements (Design Notes)
+* Graph clustering for large repos (community layout or hierarchical edge bundling).
+* Virtualized node lists for search/filter results.
+* Export service to transform current graph view into SVG/PNG (using DOM to SVG serialization).
+

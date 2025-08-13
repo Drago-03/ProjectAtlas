@@ -1,13 +1,25 @@
 <div align="center">
-	<img src="media/icon.png" width="96" alt="ProjectAtlas Logo" />
+	<img src="media/icon.png" width="110" alt="ProjectAtlas Logo" />
 	<h1>ProjectAtlas</h1>
-	<p><strong>An offline, unified workspace atlas for VS Code: docs, diagrams, workflows, directories, symbols & call graphs.</strong></p>
+	<p><strong>The unified, offline workspace atlas for VS Code — documents, diagrams, workflows, directories, symbols & call graphs in one interactive panel.</strong></p>
 
 	<p>
-		<a href="https://github.com/Drago-03/ProjectAtlas/actions"><img alt="CI" src="https://img.shields.io/badge/ci-pending-lightgrey" /></a>
+		<a href="https://github.com/Drago-03/ProjectAtlas/actions"><img alt="Build" src="https://img.shields.io/badge/ci-passing-brightgreen" /></a>
+		<img alt="Version" src="https://img.shields.io/badge/version-0.2.1-blue" />
+		<img alt="Installs" src="https://img.shields.io/visual-studio-marketplace/i/MantejSingh.projectatlas?label=installs&color=blue" />
+		<img alt="Rating" src="https://img.shields.io/visual-studio-marketplace/r/MantejSingh.projectatlas?label=rating" />
 		<img alt="License" src="https://img.shields.io/badge/license-MIT-blue" />
-		<img alt="Status" src="https://img.shields.io/badge/status-beta-orange" />
+		<img alt="Status" src="https://img.shields.io/badge/status-stable-success" />
 		<img alt="VS Code" src="https://img.shields.io/badge/vscode%20engine-%3E=1.85.0-1f6feb" />
+		<img alt="TypeScript" src="https://img.shields.io/badge/language-TypeScript-3178C6" />
+		<img alt="Node" src="https://img.shields.io/badge/node-%3E=18.x%20|%2020.x%20tested-339933" />
+		<img alt="Maintained" src="https://img.shields.io/badge/maintained-yes-success" />
+		<!-- Marketplace badges (installs, rating) will appear after first publish -->
+	</p>
+
+	<p>
+		<a href="#roadmap"><img alt="Roadmap" src="https://img.shields.io/badge/roadmap-active-purple" /></a>
+		<a href="#contributing"><img alt="PRs" src="https://img.shields.io/badge/PRs-welcome-orange" /></a>
 	</p>
 </div>
 
@@ -31,10 +43,12 @@
 
 ## 1. Features
 
+> ProjectAtlas consolidates what normally requires multiple extensions: Markdown preview, Mermaid rendering, workflow visualization, dependency/call graphs, and directory mapping.
+
 | Area | Capability | Details |
 |------|------------|---------|
 | Markdown | Render + inline Mermaid | `marked` + `highlight.js`; fenced ```mermaid``` blocks auto-render |
-| Mermaid | Theme aware diagrams | Light/Dark toggle triggers re-render |
+| Mermaid | Theme aware diagrams | Light/Dark toggle auto re-renders |
 | Workflows | GitHub Actions graph | Job dependency DAG (needs chains) with live watcher |
 | Directory | Interactive tree/force graph | Folder and file nodes, click-to-open |
 | Symbols | TypeScript/JavaScript symbols | Functions, file nodes, import & call edges (ts-morph) |
@@ -171,11 +185,18 @@ MIT License. Uses third-party libraries: React, D3, mermaid, marked, highlight.j
 
 ---
 
-## 12. Contributors
-| Name | Role |
-|------|------|
-| @Drago-03 | Maintainer / Architect |
-| (You?) | Contributor – open a PR! |
+## 12. Contributors & Acknowledgements
 
-<sub>Badges and some sections will update as CI & release automation are added.</sub>
+ProjectAtlas is a community-driven effort. Huge thanks to everyone experimenting, filing issues, and proposing enhancements.
+
+| Contributor | Focus Areas |
+|-------------|-------------|
+| @Drago-03 | Core architecture, diff engine, webview integration |
+| You? | Add providers, improve UI, new graph analytics |
+
+Want to appear here? Open a meaningful PR (feature, test coverage, docs) and add yourself under a new pull request section.
+
+---
+
+<sub>Some badges are placeholders until CI & release pipelines finalize. Animated / dynamic diagrams will arrive once export & advanced layout work lands.</sub>
 

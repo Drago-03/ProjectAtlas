@@ -15,16 +15,28 @@ export class AtlasPanel {
       AtlasPanel.instance.panel.reveal(column);
       return AtlasPanel.instance;
     }
-  const panel = (vscode.window && (vscode.window as any).createWebviewPanel ? vscode.window.createWebviewPanel(
-      'projectAtlas',
-      'ProjectAtlas',
-      column ?? vscode.ViewColumn.Active,
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-    localResourceRoots: ctx.extensionUri ? [vscode.Uri.joinPath(ctx.extensionUri, 'dist', 'webview')] : [],
-      },
-    ) : { webview: { postMessage: (_:any)=>{}, onDidReceiveMessage: (_:any)=>{} }, onDidDispose: ()=>{}, reveal: ()=>{} } as any;
+    const panel = (vscode.window && (vscode.window as any).createWebviewPanel)
+      ? vscode.window.createWebviewPanel(
+          'projectAtlas',
+          'ProjectAtlas',
+          column ?? vscode.ViewColumn.Active,
+          {
+            enableScripts: true,
+            retainContextWhenHidden: true,
+            localResourceRoots: ctx.extensionUri
+              ? [vscode.Uri.joinPath(ctx.extensionUri, 'dist', 'webview')]
+              : [],
+          },
+        )
+      : ({
+          webview: {
+            postMessage: (_: any) => {},
+            onDidReceiveMessage: (_: any) => {},
+            html: '',
+          },
+          onDidDispose: () => {},
+          reveal: () => {},
+        } as any);
   try { panel.webview.html = getWebviewHtml(ctx, panel.webview); } catch { /* ignore in test */ }
     AtlasPanel.instance = new AtlasPanel(panel, ctx.extensionUri);
     return AtlasPanel.instance;

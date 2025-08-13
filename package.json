@@ -2,8 +2,8 @@
   "name": "projectatlas",
   "displayName": "ProjectAtlas",
   "description": "Unified workspace atlas: docs, diagrams, workflows, directories, symbols & call graphs – all locally rendered.",
-  "version": "0.1.1-beta",
-  "publisher": "your-publisher-id", 
+  "version": "0.2.1",
+  "publisher": "MantejSingh",
   "author": {
     "name": "ProjectAtlas Contributors"
   },
@@ -25,16 +25,22 @@
     "Other"
   ],
   "keywords": [
-    "graph","diagram","mermaid","workflow","github actions","symbol","call graph","architecture","directory","markdown"
+    "graph",
+    "diagram",
+    "mermaid",
+    "workflow",
+    "github actions",
+    "symbol",
+    "call graph",
+    "architecture",
+    "directory",
+    "markdown"
   ],
   "galleryBanner": {
     "color": "#0d1117",
     "theme": "dark"
   },
   "icon": "media/icon.png",
-  "activationEvents": [
-    "onCommand:projectAtlas.open"
-  ],
   "main": "dist/extension/extension.js",
   "scripts": {
     "compile": "tsc -p tsconfig.json",
@@ -42,12 +48,19 @@
     "build:extension": "npm run compile",
     "build:webview": "vite build",
     "build": "npm run build:extension && npm run build:webview",
-    "test:unit": "npm run compile && mocha \"dist/tests/**/*.test.js\"",
+    "test:unit": "npm run compile && npx mocha --reporter spec \"dist/tests/**/*.test.js\"",
     "dev:webview": "vite dev --open",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "format": "prettier --write .",
-  "test": "npm run compile && mocha \"dist/tests/**/*.test.js\"",
-  "lint:md": "markdownlint '**/*.md' --ignore node_modules"
+    "test": "npm run compile && npx mocha --reporter spec \"dist/tests/**/*.test.js\"",
+    "test:single": "npx mocha --reporter spec",
+    "lint:md": "markdownlint '**/*.md' --ignore node_modules",
+    "package:vsix": "npm run build && npx @vscode/vsce package --out packages/projectatlas-${npm_package_version}.vsix",
+    "package:verbose": "npm run build && npx @vscode/vsce --logLevel trace package --out packages/projectatlas-${npm_package_version}.vsix",
+    "package": "npm run package:vsix",
+    "release:patch": "npm run build && npx @vscode/vsce publish patch",
+    "release:minor": "npm run build && npx @vscode/vsce publish minor",
+    "release:major": "npm run build && npx @vscode/vsce publish major"
   },
   "contributes": {
     "commands": [
@@ -69,14 +82,15 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vscode/vsce": "^3.0.0",
     "chai": "^4.4.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
-  "eslint-plugin-react": "^7.33.2",
-  "glob": "^10.3.10",
-  "mocha": "^10.2.0",
-  "jsdom": "^24.0.0",
-  "markdownlint-cli": "^0.39.0",
+    "eslint-plugin-react": "^7.33.2",
+    "glob": "^10.3.10",
+    "jsdom": "^24.0.0",
+    "markdownlint-cli": "^0.39.0",
+    "mocha": "^10.2.0",
     "prettier": "^3.2.5",
     "ts-morph": "^22.0.0",
     "typescript": "^5.4.0",
@@ -89,6 +103,7 @@
     "marked": "^12.0.1",
     "mermaid": "^10.9.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "sharp": "^0.34.3"
   }
 }

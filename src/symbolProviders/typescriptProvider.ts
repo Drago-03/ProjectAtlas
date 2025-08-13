@@ -49,7 +49,7 @@ export class TypeScriptProvider implements ISymbolProvider {
 				edges.push({ id: edgeId, from: fileId, to: spec, kind: 'imports' });
 			}
 		}
-		// Call edges: naive scan of call expressions referencing known functions by name
+		// Call edges: scan of call expressions referencing known functions; create per-function caller pseudo nodes
 		for (const source of project.getSourceFiles()) {
 			const fileId = source.getFilePath();
 			source.forEachDescendant(node => {
@@ -60,9 +60,21 @@ export class TypeScriptProvider implements ISymbolProvider {
 						const fq = exprSymbol.getFullyQualifiedName();
 						const callee = functionMap.get(fq);
 						if (callee) {
-							const caller = `${fileId}::(file)`; // simplified caller id per file
-							if (!nodes.find(n => n.id === caller)) {
-								nodes.push({ id: caller, kind: 'File', label: `(file) ${fileId.split('/').pop()}`, file: fileId });
+							// Determine owning function for caller context
+							const func = call.getFirstAncestorByKind(SyntaxKind.FunctionDeclaration) as FunctionDeclaration | undefined;
+							let caller: string;
+							if (func) {
+								const fnSym = func.getSymbol();
+								const fnFq = fnSym?.getFullyQualifiedName();
+								caller = fnFq ? `${fileId}::caller:${fnFq}` : `${fileId}::(file)`;
+								if (!nodes.find(n => n.id === caller)) {
+									nodes.push({ id: caller, kind: 'Caller', label: `(caller) ${(func as any).getName?.()||'anon'}`, file: fileId });
+								}
+							} else {
+								caller = `${fileId}::(file)`;
+								if (!nodes.find(n => n.id === caller)) {
+									nodes.push({ id: caller, kind: 'File', label: `(file) ${fileId.split('/').pop()}`, file: fileId });
+								}
 							}
 							const edgeId = `${caller}->${callee}`;
 							if (!edges.find(e => e.id === edgeId)) edges.push({ id: edgeId, from: caller, to: callee, kind: 'calls' });

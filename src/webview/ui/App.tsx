@@ -44,6 +44,8 @@ export const App: React.FC = () => {
 	}, [pendingMermaid, theme]);
 
 	const dirNodes = init?.directory?.nodes || [];
+	const [filter, setFilter] = useState('');
+	const filteredDir = filter ? dirNodes.filter(n => n.name?.toLowerCase().includes(filter.toLowerCase())) : dirNodes;
 	const workflow = init?.workflows;
 
 	function toggleTheme(){ setTheme(t => t==='default' ? 'dark':'default'); setMermaids([]); // re-render
@@ -60,13 +62,15 @@ export const App: React.FC = () => {
 						<div dangerouslySetInnerHTML={{ __html: markdown }} />
 						{mermaids.length > 0 && <div>
 							<h3>Diagrams</h3>
+							<button className="btn-small" onClick={()=>exportDiagrams(mermaids)}>Export SVGs</button>
 							{mermaids.map(m => <div key={m.id} dangerouslySetInnerHTML={{ __html: m.svg }} />)}
 						</div>}
 						{mermaidErrors.length>0 && <div className="error-block"><h3>Diagram Errors</h3><ul>{mermaidErrors.map((e,i)=><li key={i}>{e}</li>)}</ul></div>}
 				</div>
 				<div className="panel scroll">
 					<h2>Directory ({dirNodes.length})</h2>
-					<DirectoryGraphView nodes={dirNodes} />
+					<input placeholder="Filter..." value={filter} onChange={e=>setFilter(e.target.value)} className="filter-box" />
+					<DirectoryGraphView nodes={filteredDir} />
 				</div>
 				<div className="panel">
 					<h2>Symbols</h2>
@@ -83,3 +87,20 @@ export const App: React.FC = () => {
 
 function decodeHtml(str:string){ return str.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&'); }
 // Removed duplicate decodeHtml function
+
+function exportDiagrams(diagrams: {id:string; svg:string}[]) {
+	try {
+		diagrams.forEach(d => {
+			const blob = new Blob([d.svg], { type: 'image/svg+xml' });
+			const a = document.createElement('a');
+			a.href = URL.createObjectURL(blob);
+			a.download = `diagram-${d.id}.svg`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+		});
+	} catch (e) {
+		// eslint-disable-next-line no-console
+		console.error('Export failed', e);
+	}
+}

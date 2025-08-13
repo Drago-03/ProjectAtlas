@@ -6,14 +6,8 @@ node_modules/
 # Build outputs
 dist/
 out/
-.vscode-test/
-.vscode-test-web/
 coverage/
 *.tsbuildinfo
-
-# VS Code settings
-.vscode/
-.history/
 
 # Logs
 npm-debug.log*
@@ -27,14 +21,6 @@ Thumbs.db
 # Env files
 .env
 .env.*
-
-# VSCE packaging
-*.vsix
-
-# IDE files
-.idea/
-*.sublime-workspace
-*.sublime-project
 
 # Misc
 *.log

@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import { AtlasPanel } from './panel';
 import { TypeScriptProvider } from '../symbolProviders/typescriptProvider';
+import { PythonProvider, GoProvider } from '../symbolProviders/stubs';
 import { buildDirectoryGraph } from './fsGraph';
 import { MarkdownRenderer } from './markdown';
 import { MermaidRenderer } from './mermaid';
@@ -9,7 +10,7 @@ import { WorkflowParser } from './workflow';
 import { SymbolGraph } from '../symbolProviders/types';
 import { diffGraphs, SymbolGraphPatch } from './diff';
 
-const symbolProviders = [new TypeScriptProvider()]; // future: push more providers
+const symbolProviders = [new TypeScriptProvider(), new PythonProvider(), new GoProvider()];
 let lastSymbolGraph: SymbolGraph | undefined;
 let lastWorkflowGraph: { nodes:any[]; edges:any[] } | undefined;
 
@@ -49,6 +50,13 @@ export function activate(context: vscode.ExtensionContext) {
       context.subscriptions.push(wfWatcher);
   });
   context.subscriptions.push(disposable);
+  // minimal public API export
+  // Consumers can acquire via: const api = vscode.extensions.getExtension('MantejSingh.projectatlas')?.exports;
+  return {
+    registerSymbolProvider(provider: { build(root:string):Promise<SymbolGraph>; languageIds:string[] }) {
+      symbolProviders.push(provider as any); // simplistic; no disposal semantics yet
+    }
+  };
 }
 export function deactivate() {}
 
