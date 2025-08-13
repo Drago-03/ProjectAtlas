@@ -1,31 +1,13 @@
 # Exclude development sources & config; ship only compiled dist and essential docs
-src/**
-tests/**
-testRuntime/**
-tempTest.js
-temp_ts_import_project/**
-scripts/**
-docs/**
-.github/**
-.vscode/**
-.gitignore
-.husky/**
-node_modules/**
-*.ts
-*.tsx
-tsconfig*.json
-vite.config.ts
-package-lock.json
-**/*.map
-# Keep dist output
-!dist/**
-# Keep media assets
+**
+!dist/extension/extension.js
+!dist/webview/**
 !media/icon.png
 !media/icon.svg
-# Keep root docs
 !README.md
 !CHANGELOG.md
 !LICENSE
 !SECURITY.md
 !CODE_OF_CONDUCT.md
 !VERSION
+!package.json

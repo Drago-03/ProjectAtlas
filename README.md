@@ -1,31 +1,15 @@
-<div align="center">
-	<img src="media/icon.png" width="110" alt="ProjectAtlas Logo" />
-	<h1>ProjectAtlas</h1>
-	<p><strong>The unified, offline workspace atlas for VS Code — documents, diagrams, workflows, directories, symbols & call graphs in one interactive panel.</strong></p>
+![ProjectAtlas Logo](media/icon.png)
 
-	<p>
-		<a href="https://github.com/Drago-03/ProjectAtlas/actions"><img alt="Build" src="https://img.shields.io/badge/ci-passing-brightgreen" /></a>
-		<img alt="Version" src="https://img.shields.io/badge/version-0.2.1-blue" />
-		<img alt="Installs" src="https://img.shields.io/visual-studio-marketplace/i/MantejSingh.projectatlas?label=installs&color=blue" />
-		<img alt="Rating" src="https://img.shields.io/visual-studio-marketplace/r/MantejSingh.projectatlas?label=rating" />
-		<img alt="License" src="https://img.shields.io/badge/license-MIT-blue" />
-		<img alt="Status" src="https://img.shields.io/badge/status-stable-success" />
-		<img alt="VS Code" src="https://img.shields.io/badge/vscode%20engine-%3E=1.85.0-1f6feb" />
-		<img alt="TypeScript" src="https://img.shields.io/badge/language-TypeScript-3178C6" />
-		<img alt="Node" src="https://img.shields.io/badge/node-%3E=18.x%20|%2020.x%20tested-339933" />
-		<img alt="Maintained" src="https://img.shields.io/badge/maintained-yes-success" />
-		<!-- Marketplace badges (installs, rating) will appear after first publish -->
-	</p>
+# ProjectAtlas
 
-	<p>
-		<a href="#roadmap"><img alt="Roadmap" src="https://img.shields.io/badge/roadmap-active-purple" /></a>
-		<a href="#contributing"><img alt="PRs" src="https://img.shields.io/badge/PRs-welcome-orange" /></a>
-	</p>
-</div>
+**The unified, offline workspace atlas for VS Code — documents, diagrams, workflows, directories, symbols & call graphs in one interactive panel.**
+
+[![CI](https://github.com/Drago-03/ProjectAtlas/actions/workflows/ci.yml/badge.svg)](https://github.com/Drago-03/ProjectAtlas/actions/workflows/ci.yml) ![Version](https://img.shields.io/badge/version-0.2.1-blue) ![Installs](https://img.shields.io/visual-studio-marketplace/i/MantejSingh.projectatlas?label=installs&color=blue) ![Rating](https://img.shields.io/visual-studio-marketplace/r/MantejSingh.projectatlas?label=rating) ![License](https://img.shields.io/badge/license-MIT-blue) ![Status](https://img.shields.io/badge/status-stable-success) ![VS Code](https://img.shields.io/badge/vscode%20engine-%3E=1.85.0-1f6feb) ![TypeScript](https://img.shields.io/badge/language-TypeScript-3178C6) ![Node](https://img.shields.io/badge/node-%3E=18.x%20%7C%2020.x%20tested-339933) ![Maintained](https://img.shields.io/badge/maintained-yes-success) [![Roadmap](https://img.shields.io/badge/roadmap-active-purple)](#8-roadmap) [![PRs](https://img.shields.io/badge/PRs-welcome-orange)](#9-contributing)
 
 ---
 
 ## Table of Contents
+
 1. Features
 2. Quick Start
 3. Commands
@@ -61,11 +45,13 @@
 ## 2. Quick Start
 
 ### Install (when published)
+
 1. Open VS Code marketplace, search for “ProjectAtlas”.
 2. Click Install.
 3. Run the command: `ProjectAtlas: Open`.
 
 ### Dev / Local Build
+
 ```bash
 git clone https://github.com/Drago-03/ProjectAtlas.git
 cd ProjectAtlas
@@ -87,6 +73,7 @@ npm run build
 ## 4. Visuals & Graph Model
 
 All internal visualisations share a common structure:
+ 
 ```ts
 interface GraphNode { id: string; label?: string; kind?: string; file?: string; }
 interface GraphEdge { id: string; from: string; to: string; kind: string; }
@@ -94,6 +81,7 @@ interface SymbolGraph { nodes: GraphNode[]; edges: GraphEdge[]; diagnostics?: st
 ```
 
 Edge kinds currently emitted:
+ 
 | Kind | Source |
 |------|--------|
 | `imports` | TypeScript import declarations |
@@ -106,6 +94,7 @@ Edge kinds currently emitted:
 ## 5. Symbol Patch Protocol
 
 To avoid shipping the entire symbol graph on every save, a structural diff is computed:
+ 
 ```ts
 interface SymbolGraphPatch {
 	nodesAdded: GraphNode[];
@@ -119,6 +108,7 @@ Client merge strategy (webview): add `nodesAdded`, remove by id, then apply edge
 ---
 
 ## 6. Configuration (Planned)
+
 | Setting | Description | Default |
 |---------|-------------|---------|
 | `projectAtlas.symbols.enable` | Enable symbol extraction | true |
@@ -131,6 +121,7 @@ Future settings will be contributed via `contributes.configuration` when stabili
 ---
 
 ## 7. Performance Notes
+
 | Concern | Mitigation |
 |---------|------------|
 | Repeated symbol rebuilds | 200ms debounce on save events |
@@ -141,6 +132,7 @@ Future settings will be contributed via `contributes.configuration` when stabili
 ---
 
 ## 8. Roadmap
+
 | Version | Items |
 |---------|-------|
 | 0.2 | Python / Go provider stubs, search/filter UI |
@@ -152,6 +144,8 @@ Future settings will be contributed via `contributes.configuration` when stabili
 ---
 
 ## 9. Contributing
+
+
 ```bash
 git clone https://github.com/Drago-03/ProjectAtlas.git
 cd ProjectAtlas
@@ -159,9 +153,11 @@ npm install
 npm run build   # build extension + webview
 npm test        # run unit tests (currently limited; harness under refactor)
 ```
+
 Please open issues with reproduction steps. PRs should include: description, before/after notes, and test (when feasible).
 
 Guidelines:
+ 
 * Keep bundles lean – prefer dynamic feature toggles to additional heavy deps.
 * Isolate language providers; avoid coupling UI state to extraction logic.
 * Use the symbol patch protocol for incremental updates.
@@ -169,6 +165,7 @@ Guidelines:
 ---
 
 ## 10. Publishing / Release Process
+
 1. Update `VERSION` and `docs/CHANGELOG.md`.
 2. Run `npm run build` → verify `dist/` contains extension & webview assets.
 3. Run lint & tests: `npm run lint && npm test`.
@@ -181,6 +178,7 @@ CI (planned) will automate lint/test/package on PRs and attach VSIX as an artifa
 ---
 
 ## 11. License & Credits
+
 MIT License. Uses third-party libraries: React, D3, mermaid, marked, highlight.js, ts-morph, js-yaml.
 
 ---
@@ -198,5 +196,5 @@ Want to appear here? Open a meaningful PR (feature, test coverage, docs) and add
 
 ---
 
-<sub>Some badges are placeholders until CI & release pipelines finalize. Animated / dynamic diagrams will arrive once export & advanced layout work lands.</sub>
+Some badges are placeholders until CI & release pipelines finalize. Animated / dynamic diagrams will arrive once export & advanced layout work lands.
 
