@@ -1,0 +1,54 @@
+{
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "prefer-const": "error",
+    "no-var": "error",
+    "no-useless-escape": "off",
+    "no-mixed-spaces-and-tabs": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/webview/**/*.{ts,tsx}"],
+      "env": {
+        "browser": true,
+        "es2022": true
+      },
+      "globals": {
+        "acquireVsCodeApi": "readonly",
+        "document": "readonly",
+        "window": "readonly",
+        "SVGSVGElement": "readonly"
+      }
+    },
+    {
+      "files": ["src/extension/**/*.ts"],
+      "env": {
+        "node": true,
+        "es2022": true
+      },
+      "globals": {
+        "NodeJS": "readonly"
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "dist/**",
+    "node_modules/**",
+    "**/*.js",
+    "**/*.d.ts"
+  ]
+}

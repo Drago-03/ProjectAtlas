@@ -2,5 +2,31 @@
     "cSpell.words": [
         "Mantej",
         "projectatlas"
-    ]
+    ],
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "typescript.suggest.autoImports": true,
+    "typescript.preferences.includeAutoImports": "always",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "eslint.validate": [
+        "typescript",
+        "typescriptreact"
+    ],
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/*.log": true
+    },
+    "editor.rulers": [80, 120],
+    "markdown.preview.breaks": true,
+    "markdown.preview.linkify": true
 }

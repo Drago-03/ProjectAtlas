@@ -25,5 +25,8 @@ Thumbs.db
 # Misc
 *.log
 
-# Temp release notes file (not for commit/package)
+# Temp files (not for commit/package)
 temp.md
+IMPLEMENTATION_SUMMARY.md
+PACKAGE_UPDATE_SUMMARY.md
+CHANGELOG_UPDATE_SUMMARY.md

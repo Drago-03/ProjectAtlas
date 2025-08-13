@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "ms-vscode.vscode-typescript-next",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "ms-vscode.vscode-json",
+        "davidanson.vscode-markdownlint",
+        "streetsidesoftware.code-spell-checker",
+        "ms-vscode.test-adapter-converter",
+        "hbenl.vscode-mocha-test-adapter",
+        "ms-vscode.vscode-js-debug",
+        "ms-vscode.vscode-typescript-tslint-plugin"
+    ]
+}

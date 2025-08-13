@@ -1,0 +1,23 @@
+# Build outputs
+dist/
+out/
+coverage/
+
+# Dependencies
+node_modules/
+
+# Generated files
+*.min.js
+*.min.css
+
+# Package files
+packages/
+
+# Logs
+*.log
+
+# VS Code generated files
+.vscode/settings.json
+
+# Temporary files
+temp.md

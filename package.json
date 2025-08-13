@@ -2,7 +2,7 @@
   "name": "projectatlas",
   "displayName": "ProjectAtlas",
   "description": "Unified workspace atlas: docs, diagrams, workflows, directories, symbols & call graphs – all locally rendered.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publisher": "MantejSingh",
   "author": {
     "name": "ProjectAtlas Contributors"
@@ -45,11 +45,11 @@
   "scripts": {
     "compile": "tsc -p tsconfig.json",
     "watch": "tsc -w -p tsconfig.json",
-  "build:extension": "esbuild src/extension/extension.ts --bundle --platform=node --external:vscode --outfile=dist/extension/extension.js --format=cjs --minify",
-  "build:extension:dev": "esbuild src/extension/extension.ts --bundle --platform=node --external:vscode --outfile=dist/extension/extension.js --format=cjs --sourcemap",
+    "build:extension": "esbuild src/extension/extension.ts --bundle --platform=node --external:vscode --outfile=dist/extension/extension.js --format=cjs --minify",
+    "build:extension:dev": "esbuild src/extension/extension.ts --bundle --platform=node --external:vscode --outfile=dist/extension/extension.js --format=cjs --sourcemap",
     "build:webview": "vite build",
-  "clean": "rimraf dist",
-  "build": "npm run clean && npm run build:extension && npm run build:webview",
+    "clean": "rimraf dist",
+    "build": "npm run clean && npm run build:extension && npm run build:webview",
     "test:unit": "npm run compile && npx mocha --reporter spec \"dist/tests/**/*.test.js\"",
     "dev:webview": "vite dev --open",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
@@ -129,19 +129,25 @@
             "id": "openPanel",
             "title": "Open Atlas Panel",
             "description": "Run the 'ProjectAtlas: Open' command to open the visualization panel.",
-            "media": { "markdown": "Open the command palette (⌘⇧P) and search for ProjectAtlas: Open." }
+            "media": {
+              "markdown": "Open the command palette (⌘⇧P) and search for ProjectAtlas: Open."
+            }
           },
           {
             "id": "filterDirs",
             "title": "Filter Directories",
             "description": "Use the directory filter box to narrow large trees.",
-            "media": { "markdown": "Type part of a folder name to filter the directory visualization." }
+            "media": {
+              "markdown": "Type part of a folder name to filter the directory visualization."
+            }
           },
           {
             "id": "inspectWorkflows",
             "title": "Inspect Workflows",
             "description": "See GitHub Actions dependencies rendered as a DAG.",
-            "media": { "markdown": "Workflow jobs and needs edges appear automatically from .github/workflows." }
+            "media": {
+              "markdown": "Workflow jobs and needs edges appear automatically from .github/workflows."
+            }
           }
         ]
       }
@@ -159,8 +165,8 @@
     "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-react": "^4.2.1",
     "@vscode/vsce": "^3.0.0",
-  "esbuild": "^0.21.5",
-  "rimraf": "^5.0.5",
+    "esbuild": "^0.21.5",
+    "rimraf": "^5.0.5",
     "chai": "^4.4.1",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",

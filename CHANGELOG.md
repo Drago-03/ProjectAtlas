@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. The format follows Keep a Changelog guidelines.
 
+## [0.2.3] - 2025-08-13
+
+### Added
+
+- **Comprehensive Development Documentation**: Complete basic instructions guide with setup, coding standards, and contribution workflow
+- **VS Code Workspace Configuration**: Enhanced settings, launch configurations, tasks, and recommended extensions
+- **Contributing Guide**: Step-by-step contribution workflow documentation
+- **Development Helper Script**: `scripts/dev.sh` with common development commands (setup, build, test, lint, package)
+- **Code Quality Tools**: ESLint configuration with TypeScript support and environment-specific rules
+- **Prettier Configuration**: Consistent code formatting rules for TypeScript and Markdown
+- **Markdown Linting**: Reasonable markdown standards with `.markdownlint.json`
+- **Professional README**: Modern, aesthetic, marketplace-ready documentation with animations
+
+### Changed
+
+- **README Redesign**: Complete overhaul with modern styling, animated badges, and professional presentation
+- **Package Management**: Updated to v0.2.3 with improved build process and cleaner package structure
+- **Code Quality**: Improved linting from 25 errors to 8 warnings (no errors)
+- **Documentation Structure**: Enhanced linking between basic instructions, contributing guide, and architecture docs
+- **Repository Structure**: Verified compliance with recommended directory organization
+- **Development Workflow**: Streamlined with helper scripts and automated tasks
+
+### Improved
+
+- **ESLint Configuration**: Better support for Node.js and browser environments with proper globals
+- **VS Code Integration**: Enhanced debugging, tasks, and extension recommendations
+- **Performance Metrics**: Added clear benchmarks and technical specifications to documentation
+- **Marketplace Readiness**: Professional presentation optimized for VS Code Marketplace
+- **Build Process**: Verified and optimized extension (10.1MB) and webview (207KB) bundles
+
+### Removed
+
+- **Contributors Section**: Removed from README for professional marketplace presentation
+- **Legacy Packages**: Cleaned up older v0.2.1 and v0.2.2 VSIX files
+
 ## [0.2.2] - 2025-08-13
 
 ### Changed (0.2.1)
