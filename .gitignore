@@ -1,0 +1,40 @@
+# ProjectAtlas .gitignore
+
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+out/
+.vscode-test/
+.vscode-test-web/
+coverage/
+*.tsbuildinfo
+
+# VS Code settings
+.vscode/
+.history/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+
+# VSCE packaging
+*.vsix
+
+# IDE files
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Misc
+*.log
