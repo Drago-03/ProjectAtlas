@@ -1,10 +1,14 @@
-![ProjectAtlas Logo](media/icon.png)
-
 # ProjectAtlas
+
+<!-- markdownlint-disable MD033 -->
+<p align="center" style="margin-top:1rem;">
+	<img src="media/icon.png" alt="ProjectAtlas Logo" width="160" />
+</p>
+<!-- markdownlint-enable MD033 -->
 
 **The unified, offline workspace atlas for VS Code — documents, diagrams, workflows, directories, symbols & call graphs in one interactive panel.**
 
-[![CI](https://github.com/Drago-03/ProjectAtlas/actions/workflows/ci.yml/badge.svg)](https://github.com/Drago-03/ProjectAtlas/actions/workflows/ci.yml) ![Version](https://img.shields.io/badge/version-0.2.1-blue) ![Installs](https://img.shields.io/visual-studio-marketplace/i/MantejSingh.projectatlas?label=installs&color=blue) ![Rating](https://img.shields.io/visual-studio-marketplace/r/MantejSingh.projectatlas?label=rating) ![License](https://img.shields.io/badge/license-MIT-blue) ![Status](https://img.shields.io/badge/status-stable-success) ![VS Code](https://img.shields.io/badge/vscode%20engine-%3E=1.85.0-1f6feb) ![TypeScript](https://img.shields.io/badge/language-TypeScript-3178C6) ![Node](https://img.shields.io/badge/node-%3E=18.x%20%7C%2020.x%20tested-339933) ![Maintained](https://img.shields.io/badge/maintained-yes-success) [![Roadmap](https://img.shields.io/badge/roadmap-active-purple)](#8-roadmap) [![PRs](https://img.shields.io/badge/PRs-welcome-orange)](#9-contributing)
+[![CI](https://github.com/Drago-03/ProjectAtlas/actions/workflows/ci.yml/badge.svg)](https://github.com/Drago-03/ProjectAtlas/actions/workflows/ci.yml) ![Version](https://img.shields.io/badge/version-0.2.2-blue) ![Installs](https://img.shields.io/visual-studio-marketplace/i/MantejSingh.projectatlas?label=installs&color=blue) ![Rating](https://img.shields.io/visual-studio-marketplace/r/MantejSingh.projectatlas?label=rating) ![License](https://img.shields.io/badge/license-MIT-blue) ![Status](https://img.shields.io/badge/status-stable-success) ![VS Code](https://img.shields.io/badge/vscode%20engine-%3E=1.85.0-1f6feb) ![TypeScript](https://img.shields.io/badge/language-TypeScript-3178C6) ![Node](https://img.shields.io/badge/node-%3E=18.x%20%7C%2020.x%20tested-339933) ![Maintained](https://img.shields.io/badge/maintained-yes-success) [![Roadmap](https://img.shields.io/badge/roadmap-active-purple)](#8-roadmap) [![PRs](https://img.shields.io/badge/PRs-welcome-orange)](#9-contributing)
 
 ---
 
@@ -103,6 +107,7 @@ interface SymbolGraphPatch {
 	edgesRemoved: string[]; // edge IDs
 }
 ```
+
 Client merge strategy (webview): add `nodesAdded`, remove by id, then apply edge additions/removals idempotently. An empty patch (all arrays empty) means “no structural change” but is still valid.
 
 ---

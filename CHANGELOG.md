@@ -2,8 +2,16 @@
 
 All notable changes to this project will be documented in this file. The format follows Keep a Changelog guidelines.
 
+## [0.2.2] - 2025-08-13
+
+### Changed (0.2.1)
+
+- Version bump only (documentation & security matrix update). No code changes since 0.2.1.
+
 ## [0.2.1] - 2025-08-13
+
 ### Added
+
 - Python & Go provider stubs (diagnostic-only placeholders) registered.
 - Search / filter UI (directory name substring filtering).
 - Initial public extension API export `getProjectAtlasApi()` returning provider registration hook.
@@ -25,7 +33,7 @@ All notable changes to this project will be documented in this file. The format 
 - Build pipeline switched from tsc emit to esbuild bundling.
 - Reduced packaged surface (planned further pruning of unused dist/test sources).
 
-### Planned / In Progress
+### Planned / In Progress (0.2.1)
 
 - Additional slimming: exclude tests & source maps from VSIX (phase 2) and optional code-splitting for webview.
 - Rich per-function caller nodes (design drafted; not yet emitted).

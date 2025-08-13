@@ -2,12 +2,38 @@
 
 ## Supported Versions
 
-| Version | Status      | Support Window                                      |
-|---------|-------------|-----------------------------------------------------|
-| 0.2.x   | Supported   | Active – receives security & critical fixes         |
-| 0.1.x   | End-of-life | No further fixes; upgrade to >= 0.2.1               |
+The project follows a simple minor-based support policy:
 
-Only the latest 0.2.x release is fully supported; earlier patch versions may receive backports only for critical issues at maintainer discretion.
+* Current minor (latest published 0.2.x) – Full support (features, security, critical bug fixes).
+* Previous minor (0.1.x) – Security fixes only for 30 days after the first 0.2.x release, then End-of-life (EOL).
+* Older / unsupported versions – No fixes; please upgrade.
+
+### Version Status Matrix
+
+| Version  | Release Date | Status        | Support Ends        | Notes |
+|----------|--------------|---------------|---------------------|-------|
+| 0.2.2    | 2025-08-13   | Supported     | When 0.3.0 releases | Latest patch of active minor |
+| 0.2.1    | 2025-08-13   | Superseded    | 2025-09-12 (30 days after 0.2.2 or next patch) | Upgrade to 0.2.2 |
+| 0.2.x (<0.2.1) | (n/a)  | Not released | n/a                 | Patch numbers prior to 0.2.1 were not published |
+| 0.1.1    | 2025-08-13   | EOL           | 2025-09-12 (30 days after 0.2.2) | Last 0.1 patch; no further fixes after date |
+| 0.1.0    | 2025-08-13   | EOL           | 2025-08-13          | Superseded same day by 0.1.1 |
+
+Future versions will be appended with their lifecycle as they are released.
+
+### Support Policy Summary
+
+| Category      | Response Target                    |
+|---------------|------------------------------------|
+| Critical (RCE, data loss) | Patch or mitigation within 7 days |
+| High (privilege escalation, widespread breakage) | Patch within 14 days |
+| Moderate (DoS, information disclosure) | Patch in next minor/patch (≤30 days) |
+| Low (non-exploitable, hard-to-abuse) | Discretionary / next scheduled release |
+
+If a fix cannot meet the target window, an advisory with recommended mitigations will be published.
+
+### Upgrade Guidance
+
+Always upgrade to the latest patch of the current minor. Skipping minors is supported (0.1.x → 0.2.x) as breaking changes will be documented in the changelog if introduced.
 
 ## Reporting a Vulnerability
 
