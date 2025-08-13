@@ -36,13 +36,6 @@
 
 ProjectAtlas transforms your VS Code into a **powerful workspace navigator** that consolidates multiple tools into one seamless experience. No more juggling between different extensions for documentation, diagrams, and code analysis!
 
-<div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Dark+Mode+Preview">
-    <img src="https://via.placeholder.com/800x400/f5f5f5/333333?text=Light+Mode+Preview" alt="ProjectAtlas Preview" width="800" />
-  </picture>
-</div>
-
 ## Key Features
 
 <table>

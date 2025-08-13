@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. The format follows Keep a Changelog guidelines.
 
+## [0.2.4] - 2025-08-14
+
+### Added
+
+- **Advanced Code Analysis Dashboard**: Comprehensive code quality metrics including complexity scoring, maintainability index, code smells detection, and technical debt estimation
+- **Performance Monitoring**: Real-time performance metrics with build time tracking, bundle size analysis, load time monitoring, and memory usage profiling
+- **Dependencies Management**: Complete dependency overview with outdated package detection, vulnerability scanning, and license distribution analysis
+- **Tabbed Navigation**: Multi-tab interface with Overview, Code Analysis, Performance, and Dependencies sections
+- **Interactive Metrics**: Color-coded progress bars and trend indicators for all performance and quality metrics
+- **Enhanced UI Components**: Professional dashboard design with metric cards, performance indicators, and actionable insights
+- **Real-time Data Updates**: Dynamic data fetching and updates from VS Code extension backend
+- **Version Display**: Updated version badge to v0.2.4 throughout the interface
+
+### Changed
+
+- **Complete UI Overhaul**: Transformed from single-view to comprehensive multi-tab dashboard experience
+- **Enhanced Loading States**: Improved loading experience with detailed progress information and analysis status
+- **Error Handling**: Upgraded error recovery with specific retry mechanisms for different dashboard components
+- **State Management**: Expanded application state to handle complex dashboard data and user interactions
+- **Theme Integration**: Enhanced theme support across all new dashboard components
+
+### Improved
+
+- **User Experience**: Professional dashboard interface with intuitive navigation and clear visual hierarchy
+- **Data Visualization**: Advanced progress bars, trend indicators, and color-coded metrics for better insights
+- **Performance Insights**: Comprehensive build and runtime performance analysis with actionable recommendations
+- **Code Quality**: Deep code analysis with industry-standard metrics and best practice recommendations
+- **Accessibility**: Enhanced Safari compatibility and improved cross-browser support
+- **CSS Architecture**: Comprehensive stylesheet organization with modular component styling
+
+### Fixed
+
+- **UI Loading Issues**: Resolved critical webview loading problems that prevented extension functionality
+- **Asset Path Resolution**: Fixed relative path issues in Vite configuration for proper VS Code webview integration
+- **API Integration**: Enhanced VS Code API communication with robust error handling and retry mechanisms
+- **Cross-browser Compatibility**: Added Safari-specific CSS vendor prefixes for better compatibility
+
 ## [0.2.3] - 2025-08-13
 
 ### Added
