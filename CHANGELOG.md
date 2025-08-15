@@ -2,6 +2,82 @@
 
 All notable changes to this project will be documented in this file. The format follows Keep a Changelog guidelines.
 
+## [0.2.5] - 2025-08-15
+
+### Major Features
+
+- **Search Functionality**: Powerful search system that indexes symbols, diagnostics, and code elements with real-time filtering
+- **Data Export Capabilities**: Export project analysis data in JSON and CSV formats for external analysis and reporting
+- **Auto-refresh System**: Configurable automatic data refresh with user-controlled intervals and real-time updates
+- **Keyboard Shortcuts**: Full keyboard navigation support (Ctrl/Cmd+R for refresh, Ctrl/Cmd+F for search, number keys for tabs)
+- **Notification System**: Toast notifications for user feedback with auto-dismiss and manual close options
+- **Enhanced Loading Experience**: Progressive loading with animated progress bars and detailed status indicators
+
+### UI/UX Enhancements
+
+- **Modern Design System**: Complete CSS overhaul with CSS custom properties, consistent spacing, and design tokens
+- **Enhanced Animations**: Smooth transitions, hover effects, and progressive loading animations throughout the interface
+- **Responsive Design**: Improved mobile and tablet compatibility with flexible layouts and touch-friendly interactions
+- **Dark Theme Support**: Enhanced dark mode with proper color schemes and improved contrast ratios
+- **Status Indicators**: Real-time connection status, live data updates, and system health indicators
+- **Card-based Layout**: Professional card components with hover effects and improved visual hierarchy
+
+### Enhanced Analytics
+
+- **Advanced Code Metrics**: 
+  - Lines of code analysis
+  - Duplicate code detection
+  - Cyclomatic complexity calculation
+  - Function and class counting
+  - Multi-language support (TS, JS, Python, Go, Java, C++, C#, PHP, Ruby, Swift)
+- **Performance Monitoring**:
+  - Build time tracking
+  - Bundle size analysis with real file system data
+  - CPU and memory usage estimates
+  - Disk space utilization
+- **Dependency Analysis**:
+  - Separate tracking for dev and peer dependencies
+  - Enhanced license detection and categorization
+  - Improved vulnerability assessment
+  - Package categorization and analysis
+
+### Technical Improvements
+
+- **Enhanced VS Code Integration**: Better communication protocol between webview and extension with robust error handling
+- **Real-time Data Updates**: Live data synchronization with configurable refresh intervals
+- **Memory Optimization**: Efficient state management and reduced memory footprint
+- **Error Recovery**: Comprehensive error handling with automatic retry mechanisms
+- **Type Safety**: Enhanced TypeScript definitions and better type checking throughout the codebase
+- **Code Quality**: Improved code organization, documentation, and maintainability
+
+### Developer Experience
+
+- **Debugging Tools**: Enhanced debug information panel with connection status, performance metrics, and data flow tracking
+- **Configuration Options**: User-configurable settings for auto-refresh, themes, and data display preferences
+- **Extension API**: Improved VS Code extension API integration with better command handling
+- **Error Reporting**: Detailed error messages and diagnostic information for troubleshooting
+- **Performance Monitoring**: Built-in performance tracking for extension load times and data processing
+
+### Security & Reliability
+
+- **Input Validation**: Enhanced input sanitization and validation throughout the application
+- **Error Boundaries**: Comprehensive error handling to prevent application crashes
+- **Data Privacy**: Local-only data processing with no external data transmission
+- **Secure Communication**: Improved message passing between extension and webview components
+
+### Future Roadmap (Planned Features)
+
+- **Git Integration**: Branch analysis, commit history, and merge conflict detection
+- **Test Coverage Visualization**: Interactive test coverage reports and recommendations
+- **Code Quality Trends**: Historical tracking of code quality metrics over time
+- **Team Collaboration**: Multi-developer workspace insights and shared configurations
+- **CI/CD Integration**: Build pipeline analysis and deployment tracking
+- **Custom Metrics**: User-defined metrics and extensible analysis framework
+- **Advanced Search**: Semantic code search with AI-powered suggestions
+- **Code Recommendations**: Automated suggestions for code improvements and refactoring
+- **Performance Profiling**: Deep performance analysis with bottleneck identification
+- **Documentation Generation**: Automated documentation extraction and API reference generation
+
 ## [0.2.4] - 2025-08-14
 
 ### Added

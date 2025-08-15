@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './styles.css';
 
 // VS Code API types
@@ -24,42 +24,71 @@ interface AppState {
   theme: 'default' | 'dark' | 'playful';
   symbols: any[];
   diagnostics: any[];
-  activeTab: 'overview' | 'analysis' | 'performance' | 'dependencies';
+  activeTab:
+    | 'overview'
+    | 'analysis'
+    | 'performance'
+    | 'dependencies'
+    | 'search'
+    | 'export';
+  searchQuery: string;
+  searchResults: any[];
+  loadingProgress: number;
+  notifications: Array<{
+    id: string;
+    type: 'success' | 'error' | 'warning' | 'info';
+    message: string;
+    timestamp: number;
+  }>;
   codeMetrics: {
     complexity: number;
     maintainabilityIndex: number;
     codeSmells: number;
     testCoverage: number;
     technicalDebt: string;
+    linesOfCode: number;
+    duplicateCode: number;
+    cyclomaticComplexity: number;
   };
   performanceData: {
     buildTime: number;
     bundleSize: number;
     loadTime: number;
     memoryUsage: number;
+    cpuUsage: number;
+    diskSpace: number;
   };
   dependencies: {
     total: number;
     outdated: number;
     vulnerable: number;
     licenses: string[];
+    devDependencies: number;
+    peerDependencies: number;
   };
   stats: {
     files: number;
     symbols: number;
     errors: number;
     warnings: number;
+    functions: number;
+    classes: number;
+    interfaces: number;
   };
   debugInfo: {
     vscodeApi: boolean;
     timestamp: string;
     loadTime: number;
     retryCount: number;
+    dataReceived: number;
   };
+  realTimeUpdates: boolean;
+  autoRefresh: boolean;
+  refreshInterval: number;
 }
 
-const LOADING_TIMEOUT = 10000; // 10 seconds
-const MAX_RETRIES = 3;
+const LOADING_TIMEOUT = 30000; // 30 seconds - increased from 10
+const MAX_RETRIES = 7; // Increased from 3
 
 export const App: React.FC = () => {
   const [state, setState] = useState<AppState>({
@@ -69,36 +98,183 @@ export const App: React.FC = () => {
     symbols: [],
     diagnostics: [],
     activeTab: 'overview',
+    searchQuery: '',
+    searchResults: [],
+    loadingProgress: 0,
+    notifications: [],
     codeMetrics: {
       complexity: 0,
       maintainabilityIndex: 85,
       codeSmells: 0,
       testCoverage: 0,
       technicalDebt: '0h',
+      linesOfCode: 0,
+      duplicateCode: 0,
+      cyclomaticComplexity: 0,
     },
     performanceData: {
       buildTime: 0,
       bundleSize: 0,
       loadTime: 0,
       memoryUsage: 0,
+      cpuUsage: 0,
+      diskSpace: 0,
     },
     dependencies: {
       total: 0,
       outdated: 0,
       vulnerable: 0,
       licenses: [],
+      devDependencies: 0,
+      peerDependencies: 0,
     },
-    stats: { files: 0, symbols: 0, errors: 0, warnings: 0 },
+    stats: {
+      files: 0,
+      symbols: 0,
+      errors: 0,
+      warnings: 0,
+      functions: 0,
+      classes: 0,
+      interfaces: 0,
+    },
     debugInfo: {
       vscodeApi: false,
       timestamp: new Date().toISOString(),
       loadTime: 0,
       retryCount: 0,
+      dataReceived: 0,
     },
+    realTimeUpdates: true,
+    autoRefresh: false,
+    refreshInterval: 30000,
   });
 
   const [vscodeApi, setVscodeApi] = useState<VSCodeAPI | null>(null);
   const [startTime] = useState(Date.now());
+  const dataReceivedRef = useRef(0);
+  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Notification system
+  const addNotification = useCallback(
+    (type: 'success' | 'error' | 'warning' | 'info', message: string) => {
+      const notification = {
+        id: Date.now().toString(),
+        type,
+        message,
+        timestamp: Date.now(),
+      };
+      setState((prev) => ({
+        ...prev,
+        notifications: [...prev.notifications.slice(-4), notification], // Keep only last 5
+      }));
+
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        setState((prev) => ({
+          ...prev,
+          notifications: prev.notifications.filter(
+            (n) => n.id !== notification.id
+          ),
+        }));
+      }, 5000);
+    },
+    []
+  );
+
+  // Search functionality
+  const handleSearch = useCallback(
+    (query: string) => {
+      setState((prev) => ({ ...prev, searchQuery: query }));
+
+      if (!query.trim()) {
+        setState((prev) => ({ ...prev, searchResults: [] }));
+        return;
+      }
+
+      // Search through symbols and diagnostics
+      const symbolResults = state.symbols.filter(
+        (symbol) =>
+          symbol.name?.toLowerCase().includes(query.toLowerCase()) ||
+          symbol.kind?.toLowerCase().includes(query.toLowerCase())
+      );
+
+      const diagnosticResults = state.diagnostics.filter(
+        (diagnostic) =>
+          diagnostic.message?.toLowerCase().includes(query.toLowerCase()) ||
+          diagnostic.source?.toLowerCase().includes(query.toLowerCase())
+      );
+
+      setState((prev) => ({
+        ...prev,
+        searchResults: [
+          ...symbolResults.map((s) => ({ ...s, type: 'symbol' })),
+          ...diagnosticResults.map((d) => ({ ...d, type: 'diagnostic' })),
+        ],
+      }));
+    },
+    [state.symbols, state.diagnostics]
+  );
+
+  // Progress tracking
+  const updateProgress = useCallback((progress: number) => {
+    setState((prev) => ({
+      ...prev,
+      loadingProgress: Math.min(100, Math.max(0, progress)),
+    }));
+  }, []);
+
+  // Export functionality
+  const exportData = useCallback(
+    (format: 'json' | 'csv' | 'pdf') => {
+      const data = {
+        timestamp: new Date().toISOString(),
+        stats: state.stats,
+        codeMetrics: state.codeMetrics,
+        performanceData: state.performanceData,
+        dependencies: state.dependencies,
+        symbols: state.symbols,
+        diagnostics: state.diagnostics,
+      };
+
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: 'application/json',
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `project-atlas-export-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        addNotification('success', 'Data exported as JSON successfully!');
+      } else if (format === 'csv') {
+        // Convert to CSV format
+        const csvContent = [
+          'Metric,Value',
+          `Files,${state.stats.files}`,
+          `Symbols,${state.stats.symbols}`,
+          `Errors,${state.stats.errors}`,
+          `Warnings,${state.stats.warnings}`,
+          `Complexity,${state.codeMetrics.complexity}`,
+          `Maintainability Index,${state.codeMetrics.maintainabilityIndex}`,
+          `Build Time,${state.performanceData.buildTime}ms`,
+          `Bundle Size,${state.performanceData.bundleSize}KB`,
+          `Dependencies,${state.dependencies.total}`,
+          `Outdated Dependencies,${state.dependencies.outdated}`,
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `project-atlas-export-${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        addNotification('success', 'Data exported as CSV successfully!');
+      }
+    },
+    [state, addNotification]
+  );
 
   // Initialize VS Code API
   const initializeVSCodeApi = useCallback(async () => {
@@ -116,12 +292,14 @@ export const App: React.FC = () => {
           },
         }));
 
-        // Request initial data
-        api.postMessage({ command: 'getSymbols' });
-        api.postMessage({ command: 'getDiagnostics' });
-        api.postMessage({ command: 'getCodeMetrics' });
-        api.postMessage({ command: 'getPerformanceData' });
-        api.postMessage({ command: 'getDependencies' });
+        // Request initial data with a small delay to ensure everything is ready
+        setTimeout(() => {
+          api.postMessage({ command: 'getSymbols' });
+          api.postMessage({ command: 'getDiagnostics' });
+          api.postMessage({ command: 'getCodeMetrics' });
+          api.postMessage({ command: 'getPerformanceData' });
+          api.postMessage({ command: 'getDependencies' });
+        }, 100);
 
         return true;
       } else {
@@ -143,73 +321,130 @@ export const App: React.FC = () => {
   }, [startTime]);
 
   // Handle messages from extension
-  const handleMessage = useCallback((event: MessageEvent) => {
-    const message = event.data;
+  const handleMessage = useCallback(
+    (event: MessageEvent) => {
+      const message = event.data;
 
-    switch (message.command) {
-      case 'updateSymbols':
-        setState((prev) => ({
-          ...prev,
-          symbols: message.symbols || [],
-          isLoading: false,
-          stats: {
-            ...prev.stats,
-            symbols: message.symbols?.length || 0,
-          },
-        }));
-        break;
+      switch (message.command) {
+        case 'updateSymbols':
+          dataReceivedRef.current += 1;
+          updateProgress(20);
+          setState((prev) => ({
+            ...prev,
+            symbols: message.symbols || [],
+            isLoading: false,
+            error: null,
+            stats: {
+              ...prev.stats,
+              symbols: message.symbols?.length || 0,
+              functions:
+                message.symbols?.filter((s: any) => s.kind === 'Function')
+                  .length || 0,
+              classes:
+                message.symbols?.filter((s: any) => s.kind === 'Class')
+                  .length || 0,
+              interfaces:
+                message.symbols?.filter((s: any) => s.kind === 'Interface')
+                  .length || 0,
+            },
+            debugInfo: {
+              ...prev.debugInfo,
+              dataReceived: dataReceivedRef.current,
+            },
+          }));
+          addNotification(
+            'success',
+            `Loaded ${message.symbols?.length || 0} symbols`
+          );
+          break;
 
-      case 'updateDiagnostics':
-        setState((prev) => ({
-          ...prev,
-          diagnostics: message.diagnostics || [],
-          stats: {
-            ...prev.stats,
-            errors:
-              message.diagnostics?.filter((d: any) => d.severity === 1)
-                .length || 0,
-            warnings:
-              message.diagnostics?.filter((d: any) => d.severity === 2)
-                .length || 0,
-          },
-        }));
-        break;
+        case 'updateDiagnostics':
+          dataReceivedRef.current += 1;
+          updateProgress(40);
+          setState((prev) => ({
+            ...prev,
+            diagnostics: message.diagnostics || [],
+            stats: {
+              ...prev.stats,
+              errors:
+                message.diagnostics?.filter((d: any) => d.severity === 1)
+                  .length || 0,
+              warnings:
+                message.diagnostics?.filter((d: any) => d.severity === 2)
+                  .length || 0,
+            },
+            debugInfo: {
+              ...prev.debugInfo,
+              dataReceived: dataReceivedRef.current,
+            },
+          }));
+          break;
 
-      case 'updateCodeMetrics':
-        setState((prev) => ({
-          ...prev,
-          codeMetrics: { ...prev.codeMetrics, ...message.metrics },
-        }));
-        break;
+        case 'updateCodeMetrics':
+          dataReceivedRef.current += 1;
+          updateProgress(60);
+          setState((prev) => ({
+            ...prev,
+            codeMetrics: { ...prev.codeMetrics, ...message.metrics },
+            debugInfo: {
+              ...prev.debugInfo,
+              dataReceived: dataReceivedRef.current,
+            },
+          }));
+          break;
 
-      case 'updatePerformanceData':
-        setState((prev) => ({
-          ...prev,
-          performanceData: { ...prev.performanceData, ...message.data },
-        }));
-        break;
+        case 'updatePerformanceData':
+          dataReceivedRef.current += 1;
+          updateProgress(80);
+          setState((prev) => ({
+            ...prev,
+            performanceData: { ...prev.performanceData, ...message.data },
+            debugInfo: {
+              ...prev.debugInfo,
+              dataReceived: dataReceivedRef.current,
+            },
+          }));
+          break;
 
-      case 'updateDependencies':
-        setState((prev) => ({
-          ...prev,
-          dependencies: { ...prev.dependencies, ...message.dependencies },
-        }));
-        break;
+        case 'updateDependencies':
+          dataReceivedRef.current += 1;
+          updateProgress(100);
+          setState((prev) => ({
+            ...prev,
+            dependencies: { ...prev.dependencies, ...message.dependencies },
+            debugInfo: {
+              ...prev.debugInfo,
+              dataReceived: dataReceivedRef.current,
+            },
+          }));
+          addNotification(
+            'info',
+            `Analyzed ${message.dependencies?.total || 0} dependencies`
+          );
+          break;
 
-      case 'updateStats':
-        setState((prev) => ({
-          ...prev,
-          stats: { ...prev.stats, ...message.stats },
-        }));
-        break;
+        case 'updateStats':
+          dataReceivedRef.current += 1;
+          setState((prev) => ({
+            ...prev,
+            stats: { ...prev.stats, ...message.stats },
+            debugInfo: {
+              ...prev.debugInfo,
+              dataReceived: dataReceivedRef.current,
+            },
+          }));
+          break;
 
-      default:
-        console.log('Received unknown message:', message);
-    }
-  }, []);
+        default:
+          console.log('Received unknown message:', message);
+      }
+    },
+    [addNotification, updateProgress]
+  );
 
   // Retry initialization
   const retryInitialization = useCallback(async () => {
+    dataReceivedRef.current = 0; // Reset counter
     setState((prev) => ({
       ...prev,
       isLoading: true,
@@ -253,7 +488,7 @@ export const App: React.FC = () => {
               ...prev,
               isLoading: false,
               error:
-                prev.symbols.length === 0
+                dataReceivedRef.current === 0
                   ? 'Loading timeout - no data received'
                   : null,
             }));
@@ -270,6 +505,132 @@ export const App: React.FC = () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [initializeVSCodeApi, handleMessage]);
+
+  // Auto-refresh functionality
+  useEffect(() => {
+    if (state.autoRefresh && vscodeApi) {
+      refreshIntervalRef.current = setInterval(() => {
+        refreshData();
+      }, state.refreshInterval);
+    } else if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+      refreshIntervalRef.current = null;
+    }
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
+  }, [state.autoRefresh, state.refreshInterval, vscodeApi, refreshData]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case 'r':
+            event.preventDefault();
+            refreshData();
+            break;
+          case 'f':
+            event.preventDefault();
+            document.querySelector('.search-input')?.focus();
+            break;
+          case '1':
+            event.preventDefault();
+            switchTab('overview');
+            break;
+          case '2':
+            event.preventDefault();
+            switchTab('analysis');
+            break;
+          case '3':
+            event.preventDefault();
+            switchTab('performance');
+            break;
+          case '4':
+            event.preventDefault();
+            switchTab('dependencies');
+            break;
+          case '5':
+            event.preventDefault();
+            switchTab('search');
+            break;
+          case '6':
+            event.preventDefault();
+            switchTab('export');
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [refreshData, switchTab]);
+
+  // Auto-refresh functionality
+  useEffect(() => {
+    if (state.autoRefresh && state.refreshInterval > 0) {
+      refreshIntervalRef.current = setInterval(() => {
+        refreshData();
+      }, state.refreshInterval);
+    } else if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
+      refreshIntervalRef.current = null;
+    }
+
+    return () => {
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+      }
+    };
+  }, [state.autoRefresh, state.refreshInterval, vscodeApi, refreshData]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case 'r':
+            event.preventDefault();
+            refreshData();
+            break;
+          case 'f':
+            event.preventDefault();
+            document.querySelector('.search-input')?.focus();
+            break;
+          case '1':
+            event.preventDefault();
+            switchTab('overview');
+            break;
+          case '2':
+            event.preventDefault();
+            switchTab('analysis');
+            break;
+          case '3':
+            event.preventDefault();
+            switchTab('performance');
+            break;
+          case '4':
+            event.preventDefault();
+            switchTab('dependencies');
+            break;
+          case '5':
+            event.preventDefault();
+            switchTab('search');
+            break;
+          case '6':
+            event.preventDefault();
+            switchTab('export');
+            break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [refreshData, switchTab]);
 
   // Theme management
   const toggleTheme = useCallback(() => {
@@ -292,6 +653,7 @@ export const App: React.FC = () => {
   // Refresh data
   const refreshData = useCallback(() => {
     if (vscodeApi) {
+      dataReceivedRef.current = 0; // Reset counter
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
       vscodeApi.postMessage({ command: 'getSymbols' });
       vscodeApi.postMessage({ command: 'getDiagnostics' });
@@ -317,17 +679,24 @@ export const App: React.FC = () => {
     return 'var(--error-color)';
   };
 
-  // Loading state
+  // Enhanced loading state
   if (state.isLoading) {
     return (
       <div className={`container theme-${state.theme}`}>
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <h2>🚀 Loading ProjectAtlas UI...</h2>
+          <h1 className="loading-title">🚀 Loading ProjectAtlas UI...</h1>
+          <div className="loading-progress">
+            <div
+              className="loading-progress-bar"
+              style={{ width: `${state.loadingProgress}%` }}
+            ></div>
+          </div>
           <div className="loading-details">
             <p>Initializing VS Code integration...</p>
             <p>Gathering project symbols and diagnostics...</p>
             <p>Analyzing code metrics and dependencies...</p>
+            <p>Progress: {state.loadingProgress}%</p>
             {state.debugInfo.retryCount > 0 && (
               <p>
                 Retry attempt: {state.debugInfo.retryCount}/{MAX_RETRIES}
@@ -346,6 +715,7 @@ export const App: React.FC = () => {
               <li>Load time: {state.debugInfo.loadTime}ms</li>
               <li>Timestamp: {state.debugInfo.timestamp}</li>
               <li>Retry count: {state.debugInfo.retryCount}</li>
+              <li>Data responses: {state.debugInfo.dataReceived}/5</li>
             </ul>
           </details>
         </div>
@@ -364,10 +734,10 @@ export const App: React.FC = () => {
             <strong>Error:</strong> {state.error}
           </div>
           <div className="error-actions">
-            <button className="btn-primary" onClick={retryInitialization}>
+            <button className="btn btn-primary" onClick={retryInitialization}>
               🔄 Retry
             </button>
-            <button className="btn-secondary" onClick={refreshData}>
+            <button className="btn btn-secondary" onClick={refreshData}>
               📊 Refresh Data
             </button>
           </div>
@@ -383,6 +753,7 @@ export const App: React.FC = () => {
               <li>Load time: {state.debugInfo.loadTime}ms</li>
               <li>Retry count: {state.debugInfo.retryCount}</li>
               <li>Timestamp: {state.debugInfo.timestamp}</li>
+              <li>Data responses: {state.debugInfo.dataReceived}/5</li>
             </ul>
           </details>
         </div>
@@ -393,14 +764,83 @@ export const App: React.FC = () => {
   // Main UI
   return (
     <div className={`container theme-${state.theme}`}>
+      {/* Notifications */}
+      {state.notifications.length > 0 && (
+        <div className="notifications-container">
+          {state.notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={`notification notification-${notification.type}`}
+            >
+              <span className="notification-icon">
+                {notification.type === 'success'
+                  ? '✅'
+                  : notification.type === 'error'
+                    ? '❌'
+                    : notification.type === 'warning'
+                      ? '⚠️'
+                      : 'ℹ️'}
+              </span>
+              <span className="notification-message">
+                {notification.message}
+              </span>
+              <button
+                className="notification-close"
+                onClick={() =>
+                  setState((prev) => ({
+                    ...prev,
+                    notifications: prev.notifications.filter(
+                      (n) => n.id !== notification.id
+                    ),
+                  }))
+                }
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Header */}
       <div className="header">
         <div className="header-section">
           <h1>🗺️ ProjectAtlas</h1>
-          <span className="badge">v0.2.4</span>
+          <span className="badge">v0.2.5</span>
+          {state.realTimeUpdates && (
+            <span className="status-indicator status-success">🔴 Live</span>
+          )}
         </div>
         <div className="header-controls">
-          <button className="theme-toggle" onClick={toggleTheme}>
+          {/* Search Bar */}
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search symbols, diagnostics..."
+              value={state.searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              className="search-input"
+            />
+            {state.searchQuery && (
+              <button className="search-clear" onClick={() => handleSearch('')}>
+                ✕
+              </button>
+            )}
+          </div>
+
+          <button
+            className="btn btn-secondary"
+            onClick={() =>
+              setState((prev) => ({ ...prev, autoRefresh: !prev.autoRefresh }))
+            }
+          >
+            {state.autoRefresh ? '⏸️ Stop Auto-refresh' : '▶️ Auto-refresh'}
+          </button>
+
+          <button
+            className="btn btn-secondary theme-toggle"
+            onClick={toggleTheme}
+          >
             🎨{' '}
             {state.theme === 'default'
               ? 'Light'
@@ -408,13 +848,14 @@ export const App: React.FC = () => {
                 ? 'Dark'
                 : 'Playful'}
           </button>
-          <button className="refresh-btn" onClick={refreshData}>
+
+          <button className="btn btn-primary refresh-btn" onClick={refreshData}>
             🔄 Refresh
           </button>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
+      {/* Enhanced Navigation Tabs */}
       <div className="nav-tabs">
         <button
           className={`nav-tab ${state.activeTab === 'overview' ? 'active' : ''}`}
@@ -440,9 +881,21 @@ export const App: React.FC = () => {
         >
           📦 Dependencies
         </button>
+        <button
+          className={`nav-tab ${state.activeTab === 'search' ? 'active' : ''}`}
+          onClick={() => switchTab('search')}
+        >
+          🔎 Search
+        </button>
+        <button
+          className={`nav-tab ${state.activeTab === 'export' ? 'active' : ''}`}
+          onClick={() => switchTab('export')}
+        >
+          📤 Export
+        </button>
       </div>
 
-      {/* Stats Bar */}
+      {/* Enhanced Stats Bar */}
       <div className="stats-bar">
         <div className="stat">
           <div className="stat-label">Files</div>
@@ -453,12 +906,22 @@ export const App: React.FC = () => {
           <div className="stat-value">{state.stats.symbols}</div>
         </div>
         <div className="stat">
+          <div className="stat-label">Functions</div>
+          <div className="stat-value">{state.stats.functions}</div>
+        </div>
+        <div className="stat">
+          <div className="stat-label">Classes</div>
+          <div className="stat-value">{state.stats.classes}</div>
+        </div>
+        <div className="stat">
           <div className="stat-label">Errors</div>
-          <div className="stat-value">{state.stats.errors}</div>
+          <div className="stat-value status-error">{state.stats.errors}</div>
         </div>
         <div className="stat">
           <div className="stat-label">Warnings</div>
-          <div className="stat-value">{state.stats.warnings}</div>
+          <div className="stat-value status-warning">
+            {state.stats.warnings}
+          </div>
         </div>
       </div>
 
@@ -867,17 +1330,199 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Footer */}
+        {/* Search Tab */}
+        {state.activeTab === 'search' && (
+          <div className="tab-content">
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">🔎 Search Results</h2>
+                <div className="card-actions">
+                  <span className="status-indicator status-info">
+                    {state.searchResults.length} results
+                  </span>
+                </div>
+              </div>
+
+              {state.searchQuery ? (
+                state.searchResults.length > 0 ? (
+                  <div className="search-results">
+                    {state.searchResults.map((result, index) => (
+                      <div key={index} className="search-result-item">
+                        <div className="result-header">
+                          <span className={`result-type ${result.type}`}>
+                            {result.type === 'symbol' ? '🔶' : '🔍'}{' '}
+                            {result.type}
+                          </span>
+                          <h4>{result.name || result.message}</h4>
+                        </div>
+                        {result.kind && (
+                          <div className="result-meta">Kind: {result.kind}</div>
+                        )}
+                        {result.uri && (
+                          <div className="result-location">📁 {result.uri}</div>
+                        )}
+                        {result.severity && (
+                          <div
+                            className={`result-severity severity-${result.severity}`}
+                          >
+                            Severity:{' '}
+                            {result.severity === 1
+                              ? 'Error'
+                              : result.severity === 2
+                                ? 'Warning'
+                                : 'Info'}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="empty-state">
+                    <h3>No results found</h3>
+                    <p>
+                      Try adjusting your search query or check if data is
+                      loaded.
+                    </p>
+                  </div>
+                )
+              ) : (
+                <div className="empty-state">
+                  <h3>Start searching</h3>
+                  <p>
+                    Use the search bar above to find symbols, diagnostics, and
+                    more.
+                  </p>
+                  <div className="search-tips">
+                    <h4>Search Tips:</h4>
+                    <ul>
+                      <li>
+                        Search for function names, class names, or interfaces
+                      </li>
+                      <li>Look for error messages or diagnostic text</li>
+                      <li>
+                        Filter by symbol kinds (Function, Class, Interface)
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Export Tab */}
+        {state.activeTab === 'export' && (
+          <div className="tab-content">
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">📤 Export Data</h2>
+              </div>
+
+              <div className="export-options">
+                <div className="export-section">
+                  <h3>Export Formats</h3>
+                  <div className="export-buttons">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => exportData('json')}
+                    >
+                      📄 Export JSON
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => exportData('csv')}
+                    >
+                      📊 Export CSV
+                    </button>
+                  </div>
+                </div>
+
+                <div className="export-preview">
+                  <h3>What's Included</h3>
+                  <div className="export-items">
+                    <div className="export-item">
+                      <span className="export-icon">📈</span>
+                      <div className="export-info">
+                        <h4>Project Statistics</h4>
+                        <p>
+                          Files, symbols, functions, classes, and interfaces
+                          count
+                        </p>
+                      </div>
+                    </div>
+                    <div className="export-item">
+                      <span className="export-icon">🔍</span>
+                      <div className="export-info">
+                        <h4>Code Metrics</h4>
+                        <p>
+                          Complexity, maintainability index, and code quality
+                          metrics
+                        </p>
+                      </div>
+                    </div>
+                    <div className="export-item">
+                      <span className="export-icon">⚡</span>
+                      <div className="export-info">
+                        <h4>Performance Data</h4>
+                        <p>Build times, bundle sizes, and resource usage</p>
+                      </div>
+                    </div>
+                    <div className="export-item">
+                      <span className="export-icon">📦</span>
+                      <div className="export-info">
+                        <h4>Dependencies</h4>
+                        <p>
+                          Package information, versions, and security status
+                        </p>
+                      </div>
+                    </div>
+                    <div className="export-item">
+                      <span className="export-icon">🔶</span>
+                      <div className="export-info">
+                        <h4>Symbols & Diagnostics</h4>
+                        <p>Complete symbol table and diagnostic information</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Enhanced Footer */}
         <div className="footer">
-          <p>
-            <strong>ProjectAtlas</strong> - Navigate your codebase with
-            confidence 🧭
-          </p>
-          <small>
-            {state.debugInfo.vscodeApi ? '🟢 Connected' : '🔴 Disconnected'} •
-            Load time: {state.debugInfo.loadTime}ms • Theme: {state.theme} •
-            Version: 0.2.4
-          </small>
+          <div className="footer-content">
+            <div className="footer-section">
+              <p>
+                <strong>ProjectAtlas v0.2.5</strong> - Navigate your codebase
+                with confidence 🧭
+              </p>
+              <div className="footer-stats">
+                <span
+                  className={
+                    state.debugInfo.vscodeApi
+                      ? 'status-success'
+                      : 'status-error'
+                  }
+                >
+                  {state.debugInfo.vscodeApi
+                    ? '🟢 Connected'
+                    : '🔴 Disconnected'}
+                </span>
+                <span>Load time: {state.debugInfo.loadTime}ms</span>
+                <span>Theme: {state.theme}</span>
+                <span>Real-time: {state.realTimeUpdates ? '✅' : '❌'}</span>
+              </div>
+            </div>
+            <div className="footer-actions">
+              {state.autoRefresh && (
+                <span className="status-indicator status-info">
+                  🔄 Auto-refreshing every {state.refreshInterval / 1000}s
+                </span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

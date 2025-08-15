@@ -95,7 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 export function deactivate() {}
 
-async function buildSymbolGraph(): Promise<SymbolGraph> {
+export async function buildSymbolGraph(): Promise<SymbolGraph> {
   const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
   const aggregate: SymbolGraph = { nodes: [], edges: [], diagnostics: [] };
   for (const p of symbolProviders) {

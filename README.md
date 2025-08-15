@@ -36,6 +36,16 @@
 
 ProjectAtlas transforms your VS Code into a **powerful workspace navigator** that consolidates multiple tools into one seamless experience. No more juggling between different extensions for documentation, diagrams, and code analysis!
 
+## 🆕 What's New in v0.2.5!
+
+<div align="center">
+
+🔍 **Advanced Search** • 📊 **Data Export** • ⚡ **Auto-refresh** • 🎨 **Modern UI** • 📈 **Analytics Dashboard**
+
+*The most comprehensive update yet - making ProjectAtlas more powerful and user-friendly than ever!*
+
+</div>
+
 ## Key Features
 
 <table>
@@ -51,11 +61,33 @@ ProjectAtlas transforms your VS Code into a **powerful workspace navigator** tha
 </td>
 <td>
 
+### **Enhanced UI & Search** ⭐ *New in 0.2.5*
+- **Advanced Search** with real-time filtering
+- **Export functionality** (JSON/CSV formats)
+- **Auto-refresh** with configurable intervals
+- **Notification system** for user feedback
+- **Keyboard shortcuts** for rapid navigation
+
+</td>
+</tr>
+<tr>
+<td>
+
 ### **Interactive Graphs**
 - **Directory trees** with click-to-navigate
 - **Symbol extraction** for TypeScript/JavaScript
 - **Call graphs** and dependency mapping
 - Force-directed graph layouts
+
+</td>
+<td>
+
+### **Analytics & Metrics** ⭐ *New in 0.2.5*
+- **Code quality metrics** across languages
+- **Performance monitoring** with memory tracking
+- **Dependency analysis** with visualization
+- **Enhanced diagnostics** with severity levels
+- **Multi-language support** for symbol analysis
 
 </td>
 </tr>
@@ -67,6 +99,7 @@ ProjectAtlas transforms your VS Code into a **powerful workspace navigator** tha
 - **Incremental updates** via patch protocol
 - **Lazy loading** for large codebases
 - **Memory efficient** symbol caching
+- **Progressive loading** with status indicators
 
 </td>
 <td>
@@ -76,6 +109,7 @@ ProjectAtlas transforms your VS Code into a **powerful workspace navigator** tha
 - **Automatic discovery** of project structure
 - **Cross-platform** support (Windows, macOS, Linux)
 - **Zero configuration** required
+- **Modern design system** with animations
 
 </td>
 </tr>
@@ -120,8 +154,10 @@ ProjectAtlas transforms your VS Code into a **powerful workspace navigator** tha
 | **Mermaid** | Theme-aware Rendering | Flowcharts, sequence diagrams, automatic light/dark mode |
 | **GitHub Actions** | Workflow Visualization | Job dependency graphs, YAML parsing, live monitoring |
 | **TypeScript/JS** | Symbol Extraction | Functions, classes, imports, call graphs via ts-morph |
-| **Directories** | Interactive Trees | Folder/file navigation, search filtering, click-to-open |
+| **Python** | Symbol Analysis ⭐ *New* | Classes, functions, imports with enhanced metrics |
 | **JSON/YAML** | Structure Analysis | Configuration files, workflow definitions, data validation |
+| **Directories** | Interactive Trees | Folder/file navigation, search filtering, click-to-open |
+| **All Files** | Search & Export ⭐ *New* | Real-time search, CSV/JSON export, analytics |
 
 </div>
 
@@ -136,6 +172,31 @@ export class DataProcessor {
   }
 }
 // → Creates interactive symbol graph with call relationships
+```
+
+### Advanced Search & Filtering ⭐ *New in 0.2.5*
+```bash
+# Search across your entire workspace:
+"function getData"     # Find all functions containing "getData"
+"*.test.ts"           # Filter to test files only
+"TODO"                # Find all TODO comments
+"import React"        # Locate React imports
+```
+
+### Export Your Data ⭐ *New in 0.2.5*
+```javascript
+// Export workspace analysis to JSON
+{
+  "files": 147,
+  "symbols": 523,
+  "dependencies": 34,
+  "metrics": {
+    "codeQuality": 8.7,
+    "testCoverage": 85.2,
+    "complexity": "low"
+  }
+}
+// → Perfect for CI/CD integration and reporting
 ```
 
 ### GitHub Actions Workflows
@@ -167,9 +228,24 @@ ProjectAtlas works out of the box, but you can customize it:
 ```json
 {
   "projectAtlas.enableStatusBar": true,
-  "projectAtlas.showWelcomeOnStartup": true
+  "projectAtlas.showWelcomeOnStartup": true,
+  "projectAtlas.autoRefresh": true,
+  "projectAtlas.refreshInterval": 30000,
+  "projectAtlas.enableNotifications": true,
+  "projectAtlas.exportFormat": "json"
 }
 ```
+
+### Configuration Options ⭐ *Enhanced in 0.2.5*
+
+| **Setting** | **Default** | **Description** |
+|:------------|:-----------:|:----------------|
+| `enableStatusBar` | `true` | Show ProjectAtlas in status bar |
+| `showWelcomeOnStartup` | `true` | Display welcome screen on first use |
+| `autoRefresh` | `false` | Enable automatic data refresh ⭐ *New* |
+| `refreshInterval` | `30000` | Auto-refresh interval in milliseconds ⭐ *New* |
+| `enableNotifications` | `true` | Show status notifications ⭐ *New* |
+| `exportFormat` | `"json"` | Default export format (json/csv) ⭐ *New* |
 
 ## Commands
 
@@ -177,7 +253,61 @@ ProjectAtlas works out of the box, but you can customize it:
 |---------|-------------|----------|
 | `ProjectAtlas: Open` | Launch the main panel | `Ctrl+Shift+P` |
 
+## New in Version 0.2.5! 🎉
+
+### 🔍 **Advanced Search & Filtering**
+- **Real-time search** across all workspace data
+- **Smart filtering** by file types, symbols, and content
+- **Instant results** with highlight matching
+
+### 📊 **Export & Analytics**
+- **Export to JSON/CSV** for external analysis
+- **Code metrics dashboard** with quality indicators
+- **Performance monitoring** with memory and timing data
+- **Dependency graphs** with interactive visualization
+
+### ⚡ **Enhanced User Experience**
+- **Auto-refresh functionality** with customizable intervals
+- **Keyboard shortcuts** for power users:
+  - `Ctrl/Cmd+R` - Refresh data
+  - `Ctrl/Cmd+E` - Quick export
+  - `Ctrl/Cmd+1-6` - Switch between tabs
+- **Loading progress indicators** for better feedback
+- **Notification system** for status updates
+- **Modern design** with smooth animations
+
+### 🎨 **UI Improvements**
+- **Responsive design** that adapts to all screen sizes
+- **Enhanced color scheme** with better contrast
+- **Interactive elements** with hover effects
+- **Status indicators** for real-time data freshness
+
 **Pro Tip:** Add ProjectAtlas to your activity bar or create a custom keybinding for instant access!
+
+## ⌨️ Keyboard Shortcuts ⭐ *New in 0.2.5*
+
+ProjectAtlas now supports powerful keyboard shortcuts for enhanced productivity:
+
+<div align="center">
+
+| **Shortcut** | **Action** | **Description** |
+|:------------:|:----------:|:----------------|
+| `Ctrl/Cmd+R` | **Refresh** | Instantly refresh all workspace data |
+| `Ctrl/Cmd+E` | **Export** | Quick export current view to JSON/CSV |
+| `Ctrl/Cmd+F` | **Search** | Focus on search input for filtering |
+| `Ctrl/Cmd+1` | **Overview** | Switch to overview tab |
+| `Ctrl/Cmd+2` | **Analysis** | Switch to analysis tab |
+| `Ctrl/Cmd+3` | **Performance** | Switch to performance tab |
+| `Ctrl/Cmd+4` | **Diagnostics** | Switch to diagnostics tab |
+| `Ctrl/Cmd+5` | **Dependencies** | Switch to dependencies tab |
+| `Ctrl/Cmd+6` | **Export** | Switch to export tab |
+
+</div>
+
+**Tips:**
+- Use `Ctrl+R` for quick data refresh without mouse clicks
+- Combine `Ctrl+E` with tab switching for rapid exports
+- `Ctrl+F` + search terms for lightning-fast filtering
 
 ## Architecture
 
@@ -221,33 +351,22 @@ ProjectAtlas automatically adapts to your VS Code theme:
 | **Startup Time** | <2s | Cold start to interactive |
 | **Memory Usage** | <50MB | Typical workspace analysis |
 | **Update Speed** | <100ms | Incremental symbol updates |
+| **Search Speed** | <50ms | Real-time filtering results ⭐ *New* |
+| **Export Speed** | <1s | JSON/CSV generation ⭐ *New* |
 
 </div>
 
-## Changelog
+## 📋 Changelog
 
-### [0.2.3] - 2025-08-13
-- Enhanced documentation and development workflow
-- Improved VS Code workspace configuration
-- Bug fixes and performance improvements
-- Comprehensive setup guides and contribution documentation
+For detailed release notes, version history, and feature updates, please see:
 
-<details>
-<summary>**Previous Versions**</summary>
+<div align="center">
 
-### [0.2.2] - 2025-08-13
-- Documentation and security updates
-- Version bump with stability improvements
+**[� View Complete Changelog](CHANGELOG.md)**
 
-### [0.2.1] - 2025-08-13
-- Initial public release
-- Python & Go provider stubs
-- Search and filter functionality
-- Status bar integration
-- Activity bar view container
-- Welcome walkthrough
+*Stay updated with the latest features, improvements, and bug fixes*
 
-</details>
+</div>
 
 ## Contributing
 
@@ -277,8 +396,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 <div align="center">
 
 **Star us on GitHub** | **Report Issues** | **Request Features**
-
-<sub>Made with ❤️ for the VS Code community</sub>
 
 </div>
 

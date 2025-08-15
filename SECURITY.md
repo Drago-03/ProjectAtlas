@@ -12,11 +12,12 @@ The project follows a simple minor-based support policy:
 
 | Version  | Release Date | Status        | Support Ends        | Notes |
 |----------|--------------|---------------|---------------------|-------|
-| 0.2.4    | 2025-08-14   | Supported     | When 0.3.0 releases | Latest with advanced dashboard features |
-| 0.2.3    | 2025-08-13   | Superseded    | 2025-09-13 (30 days after 0.2.4) | Upgrade to 0.2.4 for UI fixes |
-| 0.2.2    | 2025-08-13   | Superseded    | 2025-09-12 (30 days after 0.2.3) | Upgrade to 0.2.4 |
-| 0.2.1    | 2025-08-13   | Superseded    | 2025-09-12 (30 days after 0.2.2) | Upgrade to 0.2.4 |
-| 0.2.x (<0.2.1) | (n/a)  | Not released | n/a                 | Patch numbers prior to 0.2.1 were not published |
+| 0.2.5    | 2025-01-14   | Supported     | When 0.3.0 releases | Latest with comprehensive UI enhancements and modern features |
+| 0.2.4    | 2025-08-14   | Superseded    | 2025-02-13 (30 days after 0.2.5) | Upgrade to 0.2.5 for enhanced features |
+| 0.2.3    | 2025-08-13   | Superseded    | 2025-02-13 (30 days after 0.2.5) | Upgrade to 0.2.5 |
+| 0.2.2    | 2025-08-13   | Superseded    | 2025-02-13 (30 days after 0.2.5) | Upgrade to 0.2.5 |
+| 0.2.1    | 2025-08-13   | Superseded    | 2025-02-13 (30 days after 0.2.5) | Upgrade to 0.2.5 |
+| 0.2.0 (<0.2.1) | (n/a)  | Not released | n/a                 | Patch numbers prior to 0.2.1 were not published |
 | 0.1.1    | 2025-08-13   | EOL           | 2025-09-12 (30 days after 0.2.2) | Last 0.1 patch; no further fixes after date |
 | 0.1.0    | 2025-08-13   | EOL           | 2025-08-13          | Superseded same day by 0.1.1 |
 

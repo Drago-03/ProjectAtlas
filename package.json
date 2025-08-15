@@ -2,7 +2,7 @@
   "name": "projectatlas",
   "displayName": "ProjectAtlas",
   "description": "Unified workspace atlas: docs, diagrams, workflows, directories, symbols & call graphs – all locally rendered.",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "publisher": "MantejSingh",
   "author": {
     "name": "ProjectAtlas Contributors"
