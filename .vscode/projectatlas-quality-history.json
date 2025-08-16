@@ -1,0 +1,87 @@
+[
+  {
+    "timestamp": "2025-08-16T10:20:52.901Z",
+    "complexity": 8,
+    "maintainabilityIndex": 100,
+    "codeSmells": 47,
+    "technicalDebt": 98,
+    "linesOfCode": 6904,
+    "duplicateCode": 50,
+    "testCoverage": 70,
+    "vulnerabilities": 0,
+    "issues": {
+      "critical": 1,
+      "major": 3,
+      "minor": 5,
+      "info": 14
+    }
+  },
+  {
+    "timestamp": "2025-08-16T10:21:08.380Z",
+    "complexity": 8,
+    "maintainabilityIndex": 100,
+    "codeSmells": 47,
+    "technicalDebt": 98,
+    "linesOfCode": 6904,
+    "duplicateCode": 60,
+    "testCoverage": 68,
+    "vulnerabilities": 2,
+    "issues": {
+      "critical": 1,
+      "major": 0,
+      "minor": 5,
+      "info": 1
+    }
+  },
+  {
+    "timestamp": "2025-08-16T10:21:37.216Z",
+    "complexity": 8,
+    "maintainabilityIndex": 100,
+    "codeSmells": 47,
+    "technicalDebt": 98,
+    "linesOfCode": 6904,
+    "duplicateCode": 59,
+    "testCoverage": 62,
+    "vulnerabilities": 2,
+    "issues": {
+      "critical": 0,
+      "major": 3,
+      "minor": 1,
+      "info": 9
+    }
+  },
+  {
+    "timestamp": "2025-08-16T10:22:07.629Z",
+    "complexity": 8,
+    "maintainabilityIndex": 100,
+    "codeSmells": 47,
+    "technicalDebt": 98,
+    "linesOfCode": 6904,
+    "duplicateCode": 21,
+    "testCoverage": 77,
+    "vulnerabilities": 0,
+    "issues": {
+      "critical": 0,
+      "major": 4,
+      "minor": 6,
+      "info": 6
+    }
+  },
+  {
+    "timestamp": "2025-08-16T10:22:37.537Z",
+    "complexity": 8,
+    "maintainabilityIndex": 100,
+    "codeSmells": 47,
+    "technicalDebt": 98,
+    "linesOfCode": 6904,
+    "duplicateCode": 74,
+    "testCoverage": 90,
+    "vulnerabilities": 1,
+    "issues": {
+      "critical": 1,
+      "major": 1,
+      "minor": 3,
+      "info": 0
+    }
+  }
+]

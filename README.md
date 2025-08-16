@@ -1,11 +1,35 @@
 # ProjectAtlas
 
+<div align="center"># What's New in v0.2.6
+
 <div align="center">
-  <img src="media/icon.png" alt="ProjectAtlas Logo" width="120" height="120" />
+
+**Git Integration** • **Test Coverage** • **Quality Trends** • **Team Analytics** • **CI/CD** • **Custom Metrics**
+
+*The Enterprise Analytics Update - Professional-grade insights for development teams!*
+
+</div>
+<div align="center">
+
+**Git Integration** • **Test Coverage** • **Quality Trends** • **Team Analytics** • **CI/CD** • **Custom Metrics**
+
+*The Enterprise Analytics Update - Professional-grade insights for development teams!*
+
+</div>src="media/icon.png" alt="ProjectAtlas Logo" width="120" height="120" />
   
   <h3>The Ultimate Workspace Navigator</h3>
   
-  **Unified, offline workspace atlas for VS Code — documents, diagrams, workflows, directories, symbols & call graphs in one interactive panel.**
+  **Unified, offl## Changelog
+
+For detailed release notes, version history, and feature updates, please see:
+
+<div align="center">
+
+**[View Complete Changelog](CHANGELOG.md)**
+
+*Stay updated with the latest features, improvements, and bug fixes*
+
+</div>ce atlas for VS Code — documents, diagrams, workflows, directories, symbols & call graphs in one interactive panel.**
   
   <p align="center">
     <a href="https://marketplace.visualstudio.com/items?itemName=MantejSingh.projectatlas">
@@ -36,19 +60,85 @@
 
 ProjectAtlas transforms your VS Code into a **powerful workspace navigator** that consolidates multiple tools into one seamless experience. No more juggling between different extensions for documentation, diagrams, and code analysis!
 
-## 🆕 What's New in v0.2.5!
+## 🆕 What's New in v0.2.6!
 
 <div align="center">
 
-🔍 **Advanced Search** • 📊 **Data Export** • ⚡ **Auto-refresh** • 🎨 **Modern UI** • 📈 **Analytics Dashboard**
+**Git Integration** • **Test Coverage** • **Quality Trends** • **Team Analytics** •  **CI/CD** • **Custom Metrics**
 
-*The most comprehensive update yet - making ProjectAtlas more powerful and user-friendly than ever!*
+*The Enterprise Analytics Update - Professional-grade insights for development teams!*
 
 </div>
 
 ## Key Features
 
 <table>
+<tr>
+<td>
+
+### **Git Integration** *New in 0.2.6*
+- **Branch analysis** with detailed statistics
+- **Commit history** parsing and visualization
+- **Merge conflict** detection and tracking
+- **Team collaboration** insights
+- **Repository health** monitoring
+
+</td>
+<td>
+
+### **Test Coverage** *New in 0.2.6*
+- **LCOV & Jest** report parsing
+- **Interactive coverage** reports
+- **File-level analysis** with recommendations
+- **Threshold monitoring** and alerts
+- **Coverage improvement** suggestions
+
+</td>
+</tr>
+<tr>
+<td>
+
+### **Quality Trends** *New in 0.2.6*
+- **Historical tracking** of code metrics
+- **Technical debt** monitoring
+- **Quality scoring** with alerts
+- **Trend analysis** over time
+- **Automated quality** recommendations
+
+</td>
+<td>
+
+### **Team Collaboration** *New in 0.2.6*
+- **Multi-developer** workspace insights
+- **Code ownership** analysis
+- **Specialization tracking** by developer
+- **Collaboration patterns** visualization
+- **Team productivity** metrics
+
+</td>
+</tr>
+<tr>
+<td>
+
+### **CI/CD Integration** *New in 0.2.6*
+- **Pipeline analysis** (GitHub Actions, GitLab CI, Jenkins)
+- **Build success** rate monitoring
+- **Deployment tracking** and metrics
+- **Health scoring** for pipelines
+- **Multi-platform** CI/CD support
+
+</td>
+<td>
+
+### **Custom Metrics** *New in 0.2.6*
+- **User-defined** metrics framework
+- **Built-in templates** for common patterns
+- **Threshold alerts** and notifications
+- **Dashboard configuration** tools
+- **Extensible analysis** system
+
+</td>
+</tr>
 <tr>
 <td>
 
@@ -61,12 +151,12 @@ ProjectAtlas transforms your VS Code into a **powerful workspace navigator** tha
 </td>
 <td>
 
-### **Enhanced UI & Search** ⭐ *New in 0.2.5*
-- **Advanced Search** with real-time filtering
+### **Enhanced UI & Search** *Updated in 0.2.6*
+- **Tabbed interface** with 6 analytics views
+- **Keyboard shortcuts** (7-9, 0, -, = keys)
+- **Real-time updates** with auto-refresh
 - **Export functionality** (JSON/CSV formats)
-- **Auto-refresh** with configurable intervals
-- **Notification system** for user feedback
-- **Keyboard shortcuts** for rapid navigation
+- **Professional dashboard** design
 
 </td>
 </tr>
@@ -82,7 +172,7 @@ ProjectAtlas transforms your VS Code into a **powerful workspace navigator** tha
 </td>
 <td>
 
-### **Analytics & Metrics** ⭐ *New in 0.2.5*
+### **Analytics & Metrics** *Enhanced in 0.2.6*
 - **Code quality metrics** across languages
 - **Performance monitoring** with memory tracking
 - **Dependency analysis** with visualization
@@ -91,29 +181,42 @@ ProjectAtlas transforms your VS Code into a **powerful workspace navigator** tha
 
 </td>
 </tr>
-<tr>
-<td>
-
-### **Performance First**
-- **100% offline** - no network required
-- **Incremental updates** via patch protocol
-- **Lazy loading** for large codebases
-- **Memory efficient** symbol caching
-- **Progressive loading** with status indicators
-
-</td>
-<td>
-
-### **Developer Experience**
-- **One-click access** via command palette
-- **Automatic discovery** of project structure
-- **Cross-platform** support (Windows, macOS, Linux)
-- **Zero configuration** required
-- **Modern design system** with animations
-
-</td>
-</tr>
 </table>
+
+## Enterprise Analytics Suite
+
+ProjectAtlas v0.2.6 introduces a comprehensive analytics suite designed for professional development teams:
+
+### **Professional Dashboard**
+
+- **6 specialized tabs** for different analytics views
+- **Real-time data** updates with configurable refresh
+- **Interactive visualizations** with drill-down capabilities
+- **Export functionality** for reporting and analysis
+
+### **Deep Code Insights**
+
+- **Historical quality tracking** with trend analysis
+- **Technical debt monitoring** and recommendations
+- **Coverage gap identification** with improvement paths
+- **Team productivity metrics** and collaboration insights
+
+### **DevOps Integration**
+
+- **Multi-platform CI/CD** support (GitHub Actions, GitLab CI, Jenkins, Azure DevOps)
+- **Build pipeline health** scoring and optimization
+- **Deployment frequency** and success rate tracking
+- **Custom metrics framework** for organization-specific KPIs
+
+### **Navigation Shortcuts**
+
+Access any analytics view instantly with keyboard shortcuts:
+- `Ctrl/Cmd + 7`: Git Integration
+- `Ctrl/Cmd + 8`: Test Coverage  
+- `Ctrl/Cmd + 9`: Quality Trends
+- `Ctrl/Cmd + 0`: Team Collaboration
+- `Ctrl/Cmd + -`: CI/CD Integration
+- `Ctrl/Cmd + =`: Custom Metrics
 
 ## Quick Start
 
@@ -174,7 +277,7 @@ export class DataProcessor {
 // → Creates interactive symbol graph with call relationships
 ```
 
-### Advanced Search & Filtering ⭐ *New in 0.2.5*
+### Advanced Search & Filtering *New in 0.2.5*
 ```bash
 # Search across your entire workspace:
 "function getData"     # Find all functions containing "getData"
@@ -183,7 +286,7 @@ export class DataProcessor {
 "import React"        # Locate React imports
 ```
 
-### Export Your Data ⭐ *New in 0.2.5*
+### Export Your Data *New in 0.2.5*
 ```javascript
 // Export workspace analysis to JSON
 {
@@ -236,7 +339,7 @@ ProjectAtlas works out of the box, but you can customize it:
 }
 ```
 
-### Configuration Options ⭐ *Enhanced in 0.2.5*
+### Configuration Options *Enhanced in 0.2.5*
 
 | **Setting** | **Default** | **Description** |
 |:------------|:-----------:|:----------------|
@@ -253,20 +356,23 @@ ProjectAtlas works out of the box, but you can customize it:
 |---------|-------------|----------|
 | `ProjectAtlas: Open` | Launch the main panel | `Ctrl+Shift+P` |
 
-## New in Version 0.2.5! 🎉
+## New in Version 0.2.5
 
-### 🔍 **Advanced Search & Filtering**
+### **Advanced Search & Filtering**
+
 - **Real-time search** across all workspace data
 - **Smart filtering** by file types, symbols, and content
 - **Instant results** with highlight matching
 
-### 📊 **Export & Analytics**
+### **Export & Analytics**
+
 - **Export to JSON/CSV** for external analysis
 - **Code metrics dashboard** with quality indicators
 - **Performance monitoring** with memory and timing data
 - **Dependency graphs** with interactive visualization
 
-### ⚡ **Enhanced User Experience**
+### **Enhanced User Experience**
+
 - **Auto-refresh functionality** with customizable intervals
 - **Keyboard shortcuts** for power users:
   - `Ctrl/Cmd+R` - Refresh data
@@ -276,7 +382,8 @@ ProjectAtlas works out of the box, but you can customize it:
 - **Notification system** for status updates
 - **Modern design** with smooth animations
 
-### 🎨 **UI Improvements**
+### **UI Improvements**
+
 - **Responsive design** that adapts to all screen sizes
 - **Enhanced color scheme** with better contrast
 - **Interactive elements** with hover effects
@@ -284,7 +391,7 @@ ProjectAtlas works out of the box, but you can customize it:
 
 **Pro Tip:** Add ProjectAtlas to your activity bar or create a custom keybinding for instant access!
 
-## ⌨️ Keyboard Shortcuts ⭐ *New in 0.2.5*
+## Keyboard Shortcuts *New in 0.2.5*
 
 ProjectAtlas now supports powerful keyboard shortcuts for enhanced productivity:
 
@@ -312,7 +419,7 @@ ProjectAtlas now supports powerful keyboard shortcuts for enhanced productivity:
 ## Architecture
 
 <details>
-<summary>**Technical Details**</summary>
+<summary>Technical Details</summary>
 
 ProjectAtlas uses a modern architecture:
 
@@ -330,7 +437,7 @@ ProjectAtlas uses a modern architecture:
 ## Requirements
 
 - **VS Code** 1.85.0 or higher
-- **Node.js** 18.x or 20.x (for development)
+- **Node.js** 18.0+ (for development)
 - **Operating System:** Windows, macOS, or Linux
 
 ## Themes & Customization
@@ -387,7 +494,7 @@ npm install && npm run build
 # Press F5 in VS Code to launch Extension Development Host
 ```
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 

@@ -2,6 +2,12 @@
 import * as vscode from 'vscode';
 import { getWebviewHtml } from './webviewHtml';
 import { MermaidRenderer } from './mermaid';
+import { GitIntegration } from './gitIntegration';
+import { TestCoverageAnalyzer } from './testCoverage';
+import { CodeQualityTracker } from './codeQualityTrends';
+import { TeamCollaborationAnalyzer } from './teamCollaboration';
+import { CICDAnalyzer } from './cicdIntegration';
+import { CustomMetricsFramework } from './customMetrics';
 export class AtlasPanel {
   private static instance: AtlasPanel | undefined;
   private constructor(private panel: vscode.WebviewPanel, private extensionUri: vscode.Uri) {
@@ -376,6 +382,132 @@ export class AtlasPanel {
               devDependencies: 0,
               peerDependencies: 0
             }
+          });
+        }
+        break;
+      }
+      case 'getGitInfo': {
+        try {
+          const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+          if (workspaceRoot) {
+            const gitIntegration = new GitIntegration(workspaceRoot);
+            const gitStats = await gitIntegration.getGitStats();
+            this.postMessage({ 
+              command: 'updateGitInfo', 
+              gitInfo: gitStats
+            });
+          }
+        } catch (error) {
+          console.error('Failed to get git info:', error);
+          this.postMessage({ 
+            command: 'updateGitInfo', 
+            gitInfo: null
+          });
+        }
+        break;
+      }
+      case 'getTestCoverage': {
+        try {
+          const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+          if (workspaceRoot) {
+            const coverageAnalyzer = new TestCoverageAnalyzer(workspaceRoot);
+            const coverageSummary = await coverageAnalyzer.generateCoverageSummary();
+            this.postMessage({ 
+              command: 'updateTestCoverage', 
+              coverage: coverageSummary
+            });
+          }
+        } catch (error) {
+          console.error('Failed to get test coverage:', error);
+          this.postMessage({ 
+            command: 'updateTestCoverage', 
+            coverage: null
+          });
+        }
+        break;
+      }
+      case 'getQualityTrends': {
+        try {
+          const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+          if (workspaceRoot) {
+            const qualityTracker = new CodeQualityTracker(workspaceRoot);
+            const qualityReport = await qualityTracker.generateQualityReport();
+            this.postMessage({ 
+              command: 'updateQualityTrends', 
+              trends: qualityReport
+            });
+          }
+        } catch (error) {
+          console.error('Failed to get quality trends:', error);
+          this.postMessage({ 
+            command: 'updateQualityTrends', 
+            trends: null
+          });
+        }
+        break;
+      }
+      case 'getTeamInsights': {
+        try {
+          const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+          if (workspaceRoot) {
+            const teamAnalyzer = new TeamCollaborationAnalyzer(workspaceRoot);
+            const teamInsights = await teamAnalyzer.analyzeTeam();
+            this.postMessage({ 
+              command: 'updateTeamInsights', 
+              team: teamInsights
+            });
+          }
+        } catch (error) {
+          console.error('Failed to get team insights:', error);
+          this.postMessage({ 
+            command: 'updateTeamInsights', 
+            team: null
+          });
+        }
+        break;
+      }
+      case 'getCICDInfo': {
+        try {
+          const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+          if (workspaceRoot) {
+            const cicdAnalyzer = new CICDAnalyzer(workspaceRoot);
+            const cicdInsights = await cicdAnalyzer.analyzeCICD();
+            this.postMessage({ 
+              command: 'updateCICDInfo', 
+              cicd: cicdInsights
+            });
+          }
+        } catch (error) {
+          console.error('Failed to get CI/CD info:', error);
+          this.postMessage({ 
+            command: 'updateCICDInfo', 
+            cicd: null
+          });
+        }
+        break;
+      }
+      case 'getCustomMetrics': {
+        try {
+          const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+          if (workspaceRoot) {
+            const metricsFramework = new CustomMetricsFramework(workspaceRoot);
+            const config = await metricsFramework.loadConfiguration();
+            const results = await metricsFramework.executeAllMetrics();
+            const builtInMetrics = await metricsFramework.getBuiltInMetrics();
+            this.postMessage({ 
+              command: 'updateCustomMetrics', 
+              metrics: {
+                config,
+                results,
+                builtInMetrics
+              }
+            });
+          }
+        } catch (error) {
+          console.error('Failed to get custom metrics:', error);
+          this.postMessage({ 
+            command: 'updateCustomMetrics', 
+            metrics: null
           });
         }
         break;

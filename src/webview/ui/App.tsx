@@ -30,7 +30,13 @@ interface AppState {
     | 'performance'
     | 'dependencies'
     | 'search'
-    | 'export';
+    | 'export'
+    | 'git'
+    | 'coverage'
+    | 'quality'
+    | 'team'
+    | 'cicd'
+    | 'metrics';
   searchQuery: string;
   searchResults: any[];
   loadingProgress: number;
@@ -85,6 +91,12 @@ interface AppState {
   realTimeUpdates: boolean;
   autoRefresh: boolean;
   refreshInterval: number;
+  gitInfo?: any;
+  testCoverage?: any;
+  qualityTrends?: any;
+  teamInsights?: any;
+  cicdInfo?: any;
+  customMetricsData?: any;
 }
 
 const LOADING_TIMEOUT = 30000; // 30 seconds - increased from 10
@@ -152,7 +164,7 @@ export const App: React.FC = () => {
   const [vscodeApi, setVscodeApi] = useState<VSCodeAPI | null>(null);
   const [startTime] = useState(Date.now());
   const dataReceivedRef = useRef(0);
-  const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const refreshIntervalRef = useRef<any>(null);
 
   // Notification system
   const addNotification = useCallback(
@@ -299,6 +311,12 @@ export const App: React.FC = () => {
           api.postMessage({ command: 'getCodeMetrics' });
           api.postMessage({ command: 'getPerformanceData' });
           api.postMessage({ command: 'getDependencies' });
+          api.postMessage({ command: 'getGitInfo' });
+          api.postMessage({ command: 'getTestCoverage' });
+          api.postMessage({ command: 'getQualityTrends' });
+          api.postMessage({ command: 'getTeamInsights' });
+          api.postMessage({ command: 'getCICDInfo' });
+          api.postMessage({ command: 'getCustomMetrics' });
         }, 100);
 
         return true;
@@ -423,6 +441,54 @@ export const App: React.FC = () => {
           );
           break;
 
+        case 'updateGitInfo':
+          setState((prev) => ({
+            ...prev,
+            gitInfo: message.gitInfo
+          }));
+          addNotification('info', 'Git information updated');
+          break;
+
+        case 'updateTestCoverage':
+          setState((prev) => ({
+            ...prev,
+            testCoverage: message.coverage
+          }));
+          addNotification('info', 'Test coverage updated');
+          break;
+
+        case 'updateQualityTrends':
+          setState((prev) => ({
+            ...prev,
+            qualityTrends: message.trends
+          }));
+          addNotification('info', 'Quality trends updated');
+          break;
+
+        case 'updateTeamInsights':
+          setState((prev) => ({
+            ...prev,
+            teamInsights: message.team
+          }));
+          addNotification('info', 'Team insights updated');
+          break;
+
+        case 'updateCICDInfo':
+          setState((prev) => ({
+            ...prev,
+            cicdInfo: message.cicd
+          }));
+          addNotification('info', 'CI/CD information updated');
+          break;
+
+        case 'updateCustomMetrics':
+          setState((prev) => ({
+            ...prev,
+            customMetricsData: message.metrics
+          }));
+          addNotification('info', 'Custom metrics updated');
+          break;
+
         case 'updateStats':
           dataReceivedRef.current += 1;
           setState((prev) => ({
@@ -471,7 +537,7 @@ export const App: React.FC = () => {
   // Initial setup
   useEffect(() => {
     let mounted = true;
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: number;
 
     const setup = async () => {
       // Add message listener
@@ -482,7 +548,7 @@ export const App: React.FC = () => {
 
       if (success && mounted) {
         // Set loading timeout
-        timeoutId = setTimeout(() => {
+        timeoutId = window.setTimeout(() => {
           if (mounted) {
             setState((prev) => ({
               ...prev,
@@ -502,13 +568,39 @@ export const App: React.FC = () => {
     return () => {
       mounted = false;
       window.removeEventListener('message', handleMessage);
-      if (timeoutId) clearTimeout(timeoutId);
+      if (timeoutId) window.clearTimeout(timeoutId);
     };
   }, [initializeVSCodeApi, handleMessage]);
 
+  // Tab management
+  const switchTab = useCallback((tab: AppState['activeTab']) => {
+    setState((prev) => ({ ...prev, activeTab: tab }));
+  }, []);
+
+  // Refresh data
+  const refreshData = useCallback(() => {
+    if (vscodeApi) {
+      dataReceivedRef.current = 0; // Reset counter
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+      vscodeApi.postMessage({ command: 'getSymbols' });
+      vscodeApi.postMessage({ command: 'getDiagnostics' });
+      vscodeApi.postMessage({ command: 'getCodeMetrics' });
+      vscodeApi.postMessage({ command: 'getPerformanceData' });
+      vscodeApi.postMessage({ command: 'getDependencies' });
+      vscodeApi.postMessage({ command: 'getGitInfo' });
+      vscodeApi.postMessage({ command: 'getTestCoverage' });
+      vscodeApi.postMessage({ command: 'getQualityTrends' });
+      vscodeApi.postMessage({ command: 'getTeamInsights' });
+      vscodeApi.postMessage({ command: 'getCICDInfo' });
+      vscodeApi.postMessage({ command: 'getCustomMetrics' });
+    } else {
+      retryInitialization();
+    }
+  }, [vscodeApi, retryInitialization]);
+
   // Auto-refresh functionality
   useEffect(() => {
-    if (state.autoRefresh && vscodeApi) {
+    if (state.autoRefresh && state.refreshInterval > 0 && vscodeApi) {
       refreshIntervalRef.current = setInterval(() => {
         refreshData();
       }, state.refreshInterval);
@@ -535,7 +627,7 @@ export const App: React.FC = () => {
             break;
           case 'f':
             event.preventDefault();
-            document.querySelector('.search-input')?.focus();
+            (document.querySelector('.search-input') as HTMLInputElement)?.focus();
             break;
           case '1':
             event.preventDefault();
@@ -561,68 +653,29 @@ export const App: React.FC = () => {
             event.preventDefault();
             switchTab('export');
             break;
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [refreshData, switchTab]);
-
-  // Auto-refresh functionality
-  useEffect(() => {
-    if (state.autoRefresh && state.refreshInterval > 0) {
-      refreshIntervalRef.current = setInterval(() => {
-        refreshData();
-      }, state.refreshInterval);
-    } else if (refreshIntervalRef.current) {
-      clearInterval(refreshIntervalRef.current);
-      refreshIntervalRef.current = null;
-    }
-
-    return () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-    };
-  }, [state.autoRefresh, state.refreshInterval, vscodeApi, refreshData]);
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.ctrlKey || event.metaKey) {
-        switch (event.key) {
-          case 'r':
+          case '7':
             event.preventDefault();
-            refreshData();
+            switchTab('git');
             break;
-          case 'f':
+          case '8':
             event.preventDefault();
-            document.querySelector('.search-input')?.focus();
+            switchTab('coverage');
             break;
-          case '1':
+          case '9':
             event.preventDefault();
-            switchTab('overview');
+            switchTab('quality');
             break;
-          case '2':
+          case '0':
             event.preventDefault();
-            switchTab('analysis');
+            switchTab('team');
             break;
-          case '3':
+          case '-':
             event.preventDefault();
-            switchTab('performance');
+            switchTab('cicd');
             break;
-          case '4':
+          case '=':
             event.preventDefault();
-            switchTab('dependencies');
-            break;
-          case '5':
-            event.preventDefault();
-            switchTab('search');
-            break;
-          case '6':
-            event.preventDefault();
-            switchTab('export');
+            switchTab('metrics');
             break;
         }
       }
@@ -644,26 +697,6 @@ export const App: React.FC = () => {
             : 'default',
     }));
   }, []);
-
-  // Tab management
-  const switchTab = useCallback((tab: AppState['activeTab']) => {
-    setState((prev) => ({ ...prev, activeTab: tab }));
-  }, []);
-
-  // Refresh data
-  const refreshData = useCallback(() => {
-    if (vscodeApi) {
-      dataReceivedRef.current = 0; // Reset counter
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
-      vscodeApi.postMessage({ command: 'getSymbols' });
-      vscodeApi.postMessage({ command: 'getDiagnostics' });
-      vscodeApi.postMessage({ command: 'getCodeMetrics' });
-      vscodeApi.postMessage({ command: 'getPerformanceData' });
-      vscodeApi.postMessage({ command: 'getDependencies' });
-    } else {
-      retryInitialization();
-    }
-  }, [vscodeApi, retryInitialization]);
 
   // Get complexity color
   const getComplexityColor = (complexity: number) => {
@@ -892,6 +925,42 @@ export const App: React.FC = () => {
           onClick={() => switchTab('export')}
         >
           📤 Export
+        </button>
+        <button
+          className={`nav-tab ${state.activeTab === 'git' ? 'active' : ''}`}
+          onClick={() => switchTab('git')}
+        >
+          🔗 Git
+        </button>
+        <button
+          className={`nav-tab ${state.activeTab === 'coverage' ? 'active' : ''}`}
+          onClick={() => switchTab('coverage')}
+        >
+          🧪 Coverage
+        </button>
+        <button
+          className={`nav-tab ${state.activeTab === 'quality' ? 'active' : ''}`}
+          onClick={() => switchTab('quality')}
+        >
+          📈 Quality
+        </button>
+        <button
+          className={`nav-tab ${state.activeTab === 'team' ? 'active' : ''}`}
+          onClick={() => switchTab('team')}
+        >
+          👥 Team
+        </button>
+        <button
+          className={`nav-tab ${state.activeTab === 'cicd' ? 'active' : ''}`}
+          onClick={() => switchTab('cicd')}
+        >
+          🚀 CI/CD
+        </button>
+        <button
+          className={`nav-tab ${state.activeTab === 'metrics' ? 'active' : ''}`}
+          onClick={() => switchTab('metrics')}
+        >
+          📊 Metrics
         </button>
       </div>
 
@@ -1326,6 +1395,466 @@ export const App: React.FC = () => {
               >
                 ⬆️ Update All
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Git Integration Tab */}
+        {state.activeTab === 'git' && (
+          <div className="tab-content">
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">🔗 Git Integration</h2>
+              </div>
+              
+              {state.gitInfo ? (
+                <div className="git-dashboard">
+                  <div className="git-summary">
+                    <div className="metric-card">
+                      <h3>Active Branch</h3>
+                      <div className="metric-value">{state.gitInfo.activeBranch}</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Total Commits</h3>
+                      <div className="metric-value">{state.gitInfo.totalCommits}</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Contributors</h3>
+                      <div className="metric-value">{state.gitInfo.contributors?.length || 0}</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Merge Conflicts</h3>
+                      <div className="metric-value status-error">
+                        {state.gitInfo.conflicts?.length || 0}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {state.gitInfo.contributors && state.gitInfo.contributors.length > 0 && (
+                    <div className="contributors-section">
+                      <h3>Top Contributors</h3>
+                      <div className="contributors-list">
+                        {state.gitInfo.contributors.slice(0, 5).map((contributor: string, index: number) => (
+                          <div key={index} className="contributor-item">
+                            <span className="contributor-name">{contributor}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {state.gitInfo.lastCommit && (
+                    <div className="last-commit-section">
+                      <h3>Latest Commit</h3>
+                      <div className="commit-info">
+                        <div><strong>Author:</strong> {state.gitInfo.lastCommit.author}</div>
+                        <div><strong>Message:</strong> {state.gitInfo.lastCommit.message}</div>
+                        <div><strong>Date:</strong> {new Date(state.gitInfo.lastCommit.date).toLocaleString()}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <h3>No Git Repository</h3>
+                  <p>This workspace is not a Git repository or Git integration failed to load.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Test Coverage Tab */}
+        {state.activeTab === 'coverage' && (
+          <div className="tab-content">
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">🧪 Test Coverage</h2>
+              </div>
+              
+              {state.testCoverage ? (
+                <div className="coverage-dashboard">
+                  <div className="coverage-summary">
+                    <div className="metric-card">
+                      <h3>Overall Coverage</h3>
+                      <div className="metric-value">{state.testCoverage.overall?.percentage?.toFixed(1) || 0}%</div>
+                      <div className="progress-bar">
+                        <div 
+                          className="progress-fill" 
+                          style={{ width: `${state.testCoverage.overall?.percentage || 0}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Test Files</h3>
+                      <div className="metric-value">{state.testCoverage.testFiles?.length || 0}</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Covered Files</h3>
+                      <div className="metric-value">{state.testCoverage.files?.length || 0}</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Uncovered Files</h3>
+                      <div className="metric-value status-warning">
+                        {state.testCoverage.uncoveredFiles?.length || 0}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {state.testCoverage.recommendations && state.testCoverage.recommendations.length > 0 && (
+                    <div className="recommendations-section">
+                      <h3>Recommendations</h3>
+                      <ul className="recommendations-list">
+                        {state.testCoverage.recommendations.map((rec: string, index: number) => (
+                          <li key={index}>{rec}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  
+                  {state.testCoverage.hotspots && state.testCoverage.hotspots.length > 0 && (
+                    <div className="hotspots-section">
+                      <h3>Coverage Hotspots</h3>
+                      <div className="hotspots-list">
+                        {state.testCoverage.hotspots.slice(0, 5).map((hotspot: any, index: number) => (
+                          <div key={index} className={`hotspot-item risk-${hotspot.risk}`}>
+                            <div className="hotspot-file">{hotspot.file}</div>
+                            <div className="hotspot-reason">{hotspot.reason}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <h3>No Coverage Data</h3>
+                  <p>No test coverage reports found. Run your tests with coverage enabled.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Code Quality Trends Tab */}
+        {state.activeTab === 'quality' && (
+          <div className="tab-content">
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">📈 Code Quality Trends</h2>
+              </div>
+              
+              {state.qualityTrends ? (
+                <div className="quality-dashboard">
+                  <div className="quality-summary">
+                    <div className="metric-card">
+                      <h3>Maintainability</h3>
+                      <div className="metric-value">
+                        {state.qualityTrends.current?.maintainabilityIndex || 0}
+                      </div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Complexity</h3>
+                      <div className="metric-value">
+                        {state.qualityTrends.current?.complexity || 0}
+                      </div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Code Smells</h3>
+                      <div className="metric-value status-warning">
+                        {state.qualityTrends.current?.codeSmells || 0}
+                      </div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Technical Debt</h3>
+                      <div className="metric-value">
+                        {state.qualityTrends.current?.technicalDebt || 0}h
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {state.qualityTrends.trends && state.qualityTrends.trends.length > 0 && (
+                    <div className="trends-section">
+                      <h3>Quality Trends</h3>
+                      <div className="trends-list">
+                        {state.qualityTrends.trends.map((trend: any, index: number) => (
+                          <div key={index} className={`trend-item trend-${trend.trend}`}>
+                            <div className="trend-metric">{trend.metric}</div>
+                            <div className="trend-description">{trend.description}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {state.qualityTrends.alerts && state.qualityTrends.alerts.length > 0 && (
+                    <div className="alerts-section">
+                      <h3>Quality Alerts</h3>
+                      <div className="alerts-list">
+                        {state.qualityTrends.alerts.map((alert: any, index: number) => (
+                          <div key={index} className={`alert-item alert-${alert.level}`}>
+                            <div className="alert-message">{alert.message}</div>
+                            <div className="alert-time">
+                              {new Date(alert.timestamp).toLocaleString()}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <h3>No Quality Data</h3>
+                  <p>Quality trends are being calculated. Please wait...</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Team Collaboration Tab */}
+        {state.activeTab === 'team' && (
+          <div className="tab-content">
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">👥 Team Collaboration</h2>
+              </div>
+              
+              {state.teamInsights ? (
+                <div className="team-dashboard">
+                  <div className="team-summary">
+                    <div className="metric-card">
+                      <h3>Team Members</h3>
+                      <div className="metric-value">{state.teamInsights.metrics?.totalMembers || 0}</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Active Members</h3>
+                      <div className="metric-value">{state.teamInsights.metrics?.activeMembers || 0}</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Collaboration Score</h3>
+                      <div className="metric-value">{state.teamInsights.metrics?.collaborationScore || 0}</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Knowledge Risk</h3>
+                      <div className="metric-value status-warning">
+                        {state.teamInsights.metrics?.knowledgeRisk?.length || 0}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {state.teamInsights.members && state.teamInsights.members.length > 0 && (
+                    <div className="members-section">
+                      <h3>Team Members</h3>
+                      <div className="members-list">
+                        {state.teamInsights.members.slice(0, 10).map((member: any, index: number) => (
+                          <div key={index} className="member-item">
+                            <div className="member-name">{member.name}</div>
+                            <div className="member-role">{member.role}</div>
+                            <div className="member-commits">{member.commits} commits</div>
+                            <div className="member-specialization">
+                              {member.specialization?.join(', ') || 'General'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <h3>No Team Data</h3>
+                  <p>Team collaboration insights are being analyzed...</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* CI/CD Integration Tab */}
+        {state.activeTab === 'cicd' && (
+          <div className="tab-content">
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">🚀 CI/CD Pipeline</h2>
+              </div>
+              
+              {state.cicdInfo ? (
+                <div className="cicd-dashboard">
+                  <div className="cicd-summary">
+                    <div className="metric-card">
+                      <h3>Success Rate</h3>
+                      <div className="metric-value">{state.cicdInfo.metrics?.successRate?.toFixed(1) || 0}%</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Avg Build Time</h3>
+                      <div className="metric-value">{Math.round(state.cicdInfo.metrics?.averageBuildTime || 0)}s</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Health Score</h3>
+                      <div className="metric-value">{state.cicdInfo.healthScore || 0}</div>
+                    </div>
+                    <div className="metric-card">
+                      <h3>Deployments/Day</h3>
+                      <div className="metric-value">{state.cicdInfo.metrics?.deploymentFrequency?.toFixed(1) || 0}</div>
+                    </div>
+                  </div>
+                  
+                  {state.cicdInfo.platforms && (
+                    <div className="platforms-section">
+                      <h3>Detected Platforms</h3>
+                      <div className="platforms-list">
+                        {state.cicdInfo.platforms.filter((p: any) => p.detected).map((platform: any, index: number) => (
+                          <div key={index} className="platform-item">
+                            <span className="platform-name">{platform.name}</span>
+                            <span className="platform-status">✅ Detected</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {state.cicdInfo.recentRuns && state.cicdInfo.recentRuns.length > 0 && (
+                    <div className="builds-section">
+                      <h3>Recent Builds</h3>
+                      <div className="builds-list">
+                        {state.cicdInfo.recentRuns.slice(0, 5).map((run: any, index: number) => (
+                          <div key={index} className={`build-item build-${run.status}`}>
+                            <div className="build-number">#{run.number}</div>
+                            <div className="build-branch">{run.branch}</div>
+                            <div className="build-status">{run.status}</div>
+                            <div className="build-duration">{Math.round(run.duration)}s</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <h3>No CI/CD Data</h3>
+                  <p>No CI/CD pipelines detected in this workspace.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Custom Metrics Tab */}
+        {state.activeTab === 'metrics' && (
+          <div className="tab-content">
+            <div className="card">
+              <div className="card-header">
+                <h2 className="card-title">📊 Custom Metrics</h2>
+                <div className="card-actions">
+                  <button className="action-button" onClick={() => {
+                    if (vscodeApi) {
+                      vscodeApi.postMessage({ command: 'createMetric' });
+                    }
+                  }}>
+                    + Add Metric
+                  </button>
+                </div>
+              </div>
+              
+              {state.customMetricsData ? (
+                <div className="metrics-dashboard">
+                  {state.customMetricsData.results && state.customMetricsData.results.length > 0 ? (
+                    <>
+                      <div className="metrics-summary">
+                        {state.customMetricsData.results.slice(0, 4).map((result: any, index: number) => (
+                          <div key={index} className={`metric-card metric-${result.status}`}>
+                            <h3>{result.metric.name}</h3>
+                            <div className="metric-value">
+                              {result.value}
+                              {result.metric.unit && <span className="metric-unit">{result.metric.unit}</span>}
+                            </div>
+                            <div className="metric-description">{result.metric.description}</div>
+                            {result.message && (
+                              <div className="metric-message">{result.message}</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      
+                      {state.customMetricsData.config?.metrics && (
+                        <div className="metrics-list">
+                          <h3>All Metrics</h3>
+                          <div className="metrics-grid">
+                            {state.customMetricsData.config.metrics.map((metric: any, index: number) => {
+                              const result = state.customMetricsData.results.find((r: any) => r.metric.id === metric.id);
+                              return (
+                                <div key={index} className={`metric-item metric-${result?.status || 'unknown'}`}>
+                                  <div className="metric-header">
+                                    <span className="metric-name">{metric.name}</span>
+                                    <span className={`metric-badge ${metric.category}`}>{metric.category}</span>
+                                  </div>
+                                  <div className="metric-value-large">
+                                    {result?.value || 0}
+                                    {metric.unit && <span className="metric-unit">{metric.unit}</span>}
+                                  </div>
+                                  <div className="metric-description">{metric.description}</div>
+                                  <div className="metric-thresholds">
+                                    {metric.thresholds && (
+                                      <>
+                                        <span className="threshold good">Good: {metric.thresholds.good || 'N/A'}</span>
+                                        <span className="threshold warning">Warning: {metric.thresholds.warning || 'N/A'}</span>
+                                        <span className="threshold critical">Critical: {metric.thresholds.critical || 'N/A'}</span>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {state.customMetricsData.builtInMetrics && (
+                        <div className="builtin-metrics">
+                          <h3>Built-in Metrics</h3>
+                          <div className="metrics-grid">
+                            {state.customMetricsData.builtInMetrics.map((metric: any, index: number) => (
+                              <div key={index} className="metric-item builtin">
+                                <div className="metric-header">
+                                  <span className="metric-name">{metric.name}</span>
+                                  <span className={`metric-badge ${metric.category}`}>{metric.category}</span>
+                                </div>
+                                <div className="metric-description">{metric.description}</div>
+                                <button className="action-button-small" onClick={() => {
+                                  if (vscodeApi) {
+                                    vscodeApi.postMessage({ command: 'addBuiltInMetric', metricId: metric.id });
+                                  }
+                                }}>
+                                  Add to Dashboard
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="empty-state">
+                      <h3>No Custom Metrics</h3>
+                      <p>Create your first custom metric to start tracking code quality indicators.</p>
+                      <button className="action-button" onClick={() => {
+                        if (vscodeApi) {
+                          vscodeApi.postMessage({ command: 'createMetric' });
+                        }
+                      }}>
+                        Create First Metric
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <h3>Loading Metrics...</h3>
+                  <p>Please wait while we load your custom metrics.</p>
+                </div>
+              )}
             </div>
           </div>
         )}

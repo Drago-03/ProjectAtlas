@@ -10,6 +10,12 @@ import { WorkflowParser } from './workflow';
 import { SymbolGraph } from '../symbolProviders/types';
 import { diffGraphs, SymbolGraphPatch } from './diff';
 import { createStatusBarItem } from './statusBar';
+import { GitIntegration } from './gitIntegration';
+import { TestCoverageAnalyzer } from './testCoverage';
+import { CodeQualityTracker } from './codeQualityTrends';
+import { TeamCollaborationAnalyzer } from './teamCollaboration';
+import { CICDAnalyzer } from './cicdIntegration';
+import { CustomMetricsFramework } from './customMetrics';
 
 const symbolProviders = [new TypeScriptProvider(), new PythonProvider(), new GoProvider()];
 let lastSymbolGraph: SymbolGraph | undefined;
